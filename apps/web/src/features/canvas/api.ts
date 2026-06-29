@@ -1,6 +1,6 @@
 import {
   CANVAS_NODE_REGISTRY,
-  type Batch1NodeType,
+  type RegisteredNodeType,
 } from "@infinite-canvas/canvas-schema";
 import { api } from "@/lib/api/client";
 import { newNodeId } from "./lib/serialize";
@@ -111,13 +111,22 @@ export async function saveCanvasEditor(
   return data.canvas;
 }
 
+const NODE_ID_PREFIX: Partial<Record<RegisteredNodeType, string>> = {
+  generator: "gen",
+  msgen: "msgen",
+  comfy: "comfy",
+  ltxDirector: "ltxdir",
+  promptGroup: "pg",
+  video: "vid",
+};
+
 export function createCanvasNode(
-  type: Batch1NodeType,
+  type: RegisteredNodeType,
   x: number,
   y: number,
 ): LegacyCanvasNode {
   const def = CANVAS_NODE_REGISTRY[type];
-  const prefix = type === "generator" ? "gen" : type.slice(0, 3);
+  const prefix = NODE_ID_PREFIX[type] ?? type.slice(0, 3);
   const base: LegacyCanvasNode = {
     id: newNodeId(prefix),
     type,
@@ -166,4 +175,112 @@ export async function pollCanvasImageTask(
   taskId: string,
 ): Promise<{ status: string; result?: { images?: string[] }; error?: string }> {
   return api.get(`/canvas-image-tasks/${encodeURIComponent(taskId)}`);
+}
+
+export interface MsGeneratePayload {
+  prompt: string;
+  model?: string;
+  width?: number;
+  height?: number;
+  size?: string;
+  image_urls?: string[];
+  resolution?: string;
+  client_id?: string;
+}
+
+export async function msGenerate(
+  payload: MsGeneratePayload,
+): Promise<{ url?: string; task_id?: string }> {
+  return api.post("/ms/generate", payload);
+}
+
+export interface CanvasVideoPayload {
+  prompt: string;
+  provider_id?: string;
+  model?: string;
+  duration?: number;
+  aspect_ratio?: string;
+  resolution?: string;
+  enhance_prompt?: boolean;
+  enable_upsample?: boolean;
+  watermark?: boolean;
+  camerafixed?: boolean;
+  generate_audio?: boolean;
+  multimodal?: boolean;
+}
+
+export async function createCanvasVideo(
+  payload: CanvasVideoPayload,
+): Promise<{ url?: string; urls?: string[]; video?: string }> {
+  return api.post("/canvas-video", payload);
+}
+
+export interface CanvasLlmPayload {
+  message: string;
+  system_prompt?: string;
+  model?: string;
+  provider?: string;
+  ms_model?: string;
+  messages?: Record<string, unknown>[];
+  images?: string[];
+  videos?: string[];
+}
+
+export async function createCanvasLlm(
+  payload: CanvasLlmPayload,
+): Promise<{ text?: string }> {
+  return api.post("/canvas-llm", payload);
+}
+
+export interface ComfyGeneratePayload {
+  prompt?: string;
+  width?: number;
+  height?: number;
+  workflow_json?: string;
+  type?: string;
+  params?: Record<string, unknown>;
+  client_id?: string;
+}
+
+export async function createCanvasComfyTask(
+  payload: ComfyGeneratePayload,
+): Promise<{ task_id: string }> {
+  return api.post("/canvas-comfy-tasks", payload);
+}
+
+export async function pollCanvasComfyTask(
+  taskId: string,
+): Promise<{ status: string; result?: { images?: string[] }; error?: string }> {
+  return api.get(`/canvas-comfy-tasks/${encodeURIComponent(taskId)}`);
+}
+
+export interface RunningHubSubmitPayload {
+  webappId?: string;
+  nodeInfoList?: Record<string, unknown>[];
+  instanceType?: string;
+  useWallet?: boolean;
+}
+
+export async function submitRunningHub(
+  payload: RunningHubSubmitPayload,
+): Promise<{ taskId?: string }> {
+  return api.post("/runninghub/submit", payload);
+}
+
+export interface RunningHubWorkflowSubmitPayload {
+  workflowId?: string;
+  nodeInfoList?: Record<string, unknown>[];
+  useWallet?: boolean;
+}
+
+export async function submitRunningHubWorkflow(
+  payload: RunningHubWorkflowSubmitPayload,
+): Promise<{ taskId?: string }> {
+  return api.post("/runninghub/workflow-submit", payload);
+}
+
+export async function pollRunningHubTask(
+  taskId: string,
+): Promise<{ success?: boolean; data?: { status?: string; urls?: string[] } }> {
+  return api.get(`/runninghub/query?taskId=${encodeURIComponent(taskId)}`);
 }

@@ -1,17 +1,22 @@
 import type { Edge, Node, Viewport } from "@xyflow/react";
+import { isRegisteredNodeType } from "@infinite-canvas/canvas-schema";
 import type { CanvasViewport, LegacyCanvasNode, LegacyConnection } from "../types";
+
+const FALLBACK_TYPE = "fallback";
 
 /** 上游 JSON → @xyflow/react */
 export function legacyNodesToFlow(nodes: LegacyCanvasNode[]): Node[] {
   return nodes.map((n) => {
     const { id, type, x, y, w, h, ...rest } = n;
+    const legacyType = String(type ?? "image");
+    const flowType = isRegisteredNodeType(legacyType) ? legacyType : FALLBACK_TYPE;
     const defW = typeof w === "number" ? w : undefined;
     const defH = typeof h === "number" ? h : undefined;
     return {
       id,
-      type,
+      type: flowType,
       position: { x: Number(x) || 0, y: Number(y) || 0 },
-      data: { ...rest, nodeType: type },
+      data: { ...rest, nodeType: legacyType },
       ...(defW || defH
         ? { style: { width: defW, height: defH, minWidth: 200 } }
         : { style: { minWidth: 200 } }),
@@ -31,12 +36,17 @@ export function legacyConnectionsToFlow(connections: LegacyConnection[]): Edge[]
 export function flowNodesToLegacy(nodes: Node[]): LegacyCanvasNode[] {
   return nodes.map((n) => {
     const data = { ...(n.data as Record<string, unknown>) };
+    const storedType = data.nodeType;
     delete data.nodeType;
+    const legacyType =
+      n.type === "fallback" && typeof storedType === "string"
+        ? storedType
+        : (n.type ?? "image");
     const w = n.style?.width;
     const h = n.style?.height;
     return {
       id: n.id,
-      type: n.type ?? "image",
+      type: legacyType,
       x: n.position.x,
       y: n.position.y,
       ...(typeof w === "number" ? { w } : {}),

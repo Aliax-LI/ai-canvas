@@ -4,45 +4,45 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createCanvasImageTask } from "../../api";
-import { waitForImageTask } from "../../lib/nodeRun";
+import { createCanvasVideo } from "../../api";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
-import type { GeneratorNodeData } from "@infinite-canvas/canvas-schema";
+import type { VideoNodeData } from "@infinite-canvas/canvas-schema";
 
-export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorNodeData>) {
+export function VideoNode({ id, data, selected }: CanvasNodeProps<VideoNodeData>) {
   const [running, setRunning] = useState(Boolean(data.running));
   const provider = String(data.apiProvider ?? "comfly");
-  const model = String(data.model ?? "");
-  const ratio = String(data.ratio ?? "square");
-  const resolution = String(data.resolution ?? "1k");
-  const runStatus = String(data.runStatus ?? "");
+  const model = String(data.model ?? "veo3-fast");
+  const duration = Number(data.duration ?? 5);
+  const aspectRatio = String(data.aspectRatio ?? "16:9");
   const runError = String(data.runError ?? "");
 
   const handleRun = useCallback(async () => {
     setRunning(true);
     try {
-      const task = await createCanvasImageTask({
-        prompt: "A beautiful landscape",
+      await createCanvasVideo({
+        prompt: "A cinematic landscape video",
         provider_id: provider,
-        model: model || "dall-e-3",
-        size: resolution === "1k" ? "1024x1024" : "512x512",
+        model,
+        duration,
+        aspect_ratio: aspectRatio,
+        enhance_prompt: Boolean(data.enhancePrompt),
+        generate_audio: Boolean(data.generateAudio),
+        multimodal: Boolean(data.multimodal),
       });
-      await waitForImageTask(task.task_id);
-      toast.success("生成任务已提交");
+      toast.success("视频生成完成");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "生成失败");
+      toast.error(e instanceof Error ? e.message : "视频生成失败");
     } finally {
       setRunning(false);
     }
-  }, [provider, model, resolution]);
+  }, [provider, model, duration, aspectRatio, data.enhancePrompt, data.generateAudio, data.multimodal]);
 
   return (
     <BaseNodeShell
-      type="generator"
-      title="API 生图"
+      type="video"
+      title="视频生成"
       selected={selected}
       running={running}
-      error={runStatus === "failed"}
       data-testid={`canvas-node-${id}`}
     >
       <div className="space-y-2 nodrag">
@@ -52,16 +52,16 @@ export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorN
         </div>
         <div>
           <Label className="text-xs text-muted-foreground">模型</Label>
-          <Input value={model} readOnly placeholder="默认模型" className="h-7 text-xs" />
+          <Input value={model} readOnly className="h-7 text-xs" />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-xs text-muted-foreground">比例</Label>
-            <Input value={ratio} readOnly className="h-7 text-xs" />
+            <Label className="text-xs text-muted-foreground">时长</Label>
+            <Input value={`${duration}s`} readOnly className="h-7 text-xs" />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground">分辨率</Label>
-            <Input value={resolution} readOnly className="h-7 text-xs" />
+            <Label className="text-xs text-muted-foreground">比例</Label>
+            <Input value={aspectRatio} readOnly className="h-7 text-xs" />
           </div>
         </div>
         {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
@@ -70,14 +70,10 @@ export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorN
           size="sm"
           className="w-full"
           disabled={running}
-          data-testid={`canvas-generator-run-${id}`}
+          data-testid={`canvas-video-run-${id}`}
           onClick={() => void handleRun()}
         >
-          {running ? (
-            <Loader2 className="mr-1 size-3 animate-spin" />
-          ) : (
-            <Play className="mr-1 size-3" />
-          )}
+          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
           运行
         </Button>
       </div>

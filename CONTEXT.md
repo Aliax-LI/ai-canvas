@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M9 — 无限画布 Batch 1 完成`（@xyflow/react + 5 类节点；Tauri 待做）
+**当前阶段**：`M9 — 无限画布 Batch 2 完成`（14 类节点 + Fallback；Tauri 待做）
 
 **当前里程碑进度**：
 
@@ -32,7 +32,7 @@
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
-| M9 无限画布 + Tauri | 🟡 进行中 | Batch 1：`/canvas/:id` 编辑器 + 5 节点；Tauri 待做 |
+| M9 无限画布 + Tauri | 🟡 进行中 | Batch 2：14 类节点 + Fallback + API 运行；Tauri 待做 |
 
 ---
 
@@ -51,7 +51,7 @@
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
-| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 5 节点 Batch 1 |
+| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 Batch 1–2 |
 | smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
@@ -73,6 +73,41 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M9 前端：无限画布 Batch 2 节点类型
+
+**变更摘要**
+
+- **`packages/canvas-schema/src/nodes.ts`**：新增 `BATCH2_NODE_TYPES`（msgen/comfy/rh/video/llm/loop/text/ltxDirector/promptGroup）及 defaultData（对齐上游 `canvas.js`）
+- React 节点组件 9 类 + **`FallbackNode`**（未知 type 保留 JSON preview）
+- **`serialize.ts`**：未注册 type → `fallback` 渲染；保存时还原 `nodeType`
+- **`api.ts`**：`canvas-video`、`canvas-llm`、`ms/generate`、`canvas-comfy-tasks`、`runninghub/submit|query`
+- **`CreateMenu`**：分组展示 Batch 1 + Batch 2
+- E2E 扩展：CreateMenu Batch2 选项 + Fallback 断言
+- 计划文档 Batch 2 章节 + Batch 3 缺口
+
+**影响路径**
+
+- `packages/canvas-schema/src/**`
+- `apps/web/src/features/canvas/**`
+- `tests/e2e/m9-canvas-editor.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m9-canvas-editor.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **10 passed**
+
+**下一步**
+
+- M9 Batch 3：级联运行、连线输入解析、loop/LTX 完整逻辑
+- Tauri 2 桌面打包
+
+**方向对齐**
+
+- 无限画布全部 14 类节点已有 UI 与 data 兼容；运行队列与编排待 Batch 3
 
 ---
 

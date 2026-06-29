@@ -21,6 +21,14 @@ const MOCK_CANVAS = {
       url: "",
       name: "空白图片",
     },
+    {
+      id: "legacy_unknown",
+      type: "customLegacyType",
+      x: 700,
+      y: 100,
+      foo: "bar",
+      count: 2,
+    },
   ],
   connections: [{ id: "c1", from: "prompt_abc", to: "img_def" }],
   viewport: { x: 0, y: 0, scale: 1 },
@@ -66,12 +74,17 @@ test.describe("M9 canvas editor", () => {
     await expect(page.getByTestId("canvas-flow")).toBeVisible();
     await expect(page.getByTestId("canvas-node-prompt_abc")).toBeVisible();
     await expect(page.getByText("一只猫在草地上")).toBeVisible();
+    await expect(page.getByText("未知节点 · customLegacyType")).toBeVisible();
 
     await page.getByTestId("canvas-create-fab").click();
     await expect(page.getByTestId("canvas-create-menu")).toBeVisible();
+    await expect(page.getByTestId("canvas-create-msgen")).toBeVisible();
+    await expect(page.getByTestId("canvas-create-comfy")).toBeVisible();
+    await expect(page.getByTestId("canvas-create-video")).toBeVisible();
+    await expect(page.getByTestId("canvas-create-llm")).toBeVisible();
     await page.getByTestId("canvas-create-output").click();
 
     const outputNodes = page.locator("[data-testid^='canvas-node-']");
-    await expect(outputNodes).toHaveCount(3);
+    await expect(outputNodes).toHaveCount(4);
   });
 });

@@ -1,4 +1,4 @@
-import type { Batch1NodeType } from "@infinite-canvas/canvas-schema";
+import type { RegisteredNodeType } from "@infinite-canvas/canvas-schema";
 
 export interface CanvasRecord {
   id: string;
@@ -70,6 +70,6 @@ export interface CanvasSavePayload {
   client_id: string;
 }
 
-export type CreateNodeType = Batch1NodeType;
+export type CreateNodeType = RegisteredNodeType;
 
 export type SaveState = "idle" | "pending" | "saving" | "saved" | "error";

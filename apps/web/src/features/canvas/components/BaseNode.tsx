@@ -8,6 +8,16 @@ const ACCENT: Record<string, string> = {
   output: "#18181B",
   group: "#71717A",
   generator: "#2563EB",
+  msgen: "#7C3AED",
+  comfy: "#EA580C",
+  rh: "#0891B2",
+  video: "#DB2777",
+  llm: "#059669",
+  loop: "#CA8A04",
+  text: "#52525B",
+  ltxDirector: "#9333EA",
+  promptGroup: "#52525B",
+  fallback: "#A1A1AA",
 };
 
 interface BaseNodeShellProps {

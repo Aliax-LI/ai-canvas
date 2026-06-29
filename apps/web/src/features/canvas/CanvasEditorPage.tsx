@@ -5,7 +5,7 @@ import type { Edge, Node, Viewport } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import type { Batch1NodeType } from "@infinite-canvas/canvas-schema";
+import type { RegisteredNodeType } from "@infinite-canvas/canvas-schema";
 import {
   createCanvasNode,
   fetchCanvasEditor,
@@ -136,7 +136,7 @@ export function CanvasEditorPage() {
   }, [viewport]);
 
   const addNode = useCallback(
-    (type: Batch1NodeType, extra?: Record<string, unknown>) => {
+    (type: RegisteredNodeType, extra?: Record<string, unknown>) => {
       const now = Date.now();
       if (now - lastAddAtRef.current < 200) return;
       lastAddAtRef.current = now;
