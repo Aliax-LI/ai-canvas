@@ -1,7 +1,6 @@
 import { api } from "@/lib/api/client";
+import { getApiBase, resolveServerUrl } from "@/lib/api/base";
 import type { GenerateResult, HistoryItem } from "./types";
-
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
 
 export function newClientId(): string {
   return crypto.randomUUID();
@@ -23,7 +22,7 @@ export async function fetchModelScopeToken(): Promise<string> {
 export async function uploadComfyImages(files: File[]): Promise<string[]> {
   const form = new FormData();
   for (const file of files) form.append("files", file);
-  const response = await fetch(`${API_BASE}/upload`, { method: "POST", body: form });
+  const response = await fetch(`${getApiBase()}/upload`, { method: "POST", body: form });
   const data = (await response.json()) as { names?: string[]; files?: { name: string }[] };
   if (!response.ok) throw new Error("上传失败");
   if (Array.isArray(data.names)) return data.names;
@@ -34,7 +33,7 @@ export async function uploadComfyImages(files: File[]): Promise<string[]> {
 export async function uploadAiReferences(files: File[]): Promise<{ url: string; name: string }[]> {
   const form = new FormData();
   for (const file of files) form.append("files", file);
-  const response = await fetch(`${API_BASE}/ai/upload`, { method: "POST", body: form });
+  const response = await fetch(`${getApiBase()}/ai/upload`, { method: "POST", body: form });
   const data = (await response.json()) as { files?: { url: string; name: string }[] };
   if (!response.ok) throw new Error("参考图上传失败");
   return data.files ?? [];
@@ -45,7 +44,7 @@ export async function comfyGenerate(body: Record<string, unknown>): Promise<Gene
 }
 
 export async function cloudGenerate(body: Record<string, unknown>): Promise<GenerateResult> {
-  const response = await fetch("/generate", {
+  const response = await fetch(resolveServerUrl("/generate"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

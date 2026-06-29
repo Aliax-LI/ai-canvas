@@ -1,7 +1,6 @@
 import { api } from "@/lib/api/client";
+import { getApiBase } from "@/lib/api/base";
 import type { AiConfig, ConversationDetail, ConversationSummary } from "./types";
-
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
 
 export async function fetchConversations(): Promise<ConversationSummary[]> {
   const data = await api.get<{ conversations: ConversationSummary[] }>("/conversations");
@@ -41,7 +40,7 @@ export interface StreamChatOptions {
 }
 
 export async function streamChat(options: StreamChatOptions): Promise<void> {
-  const response = await fetch(`${API_BASE}/chat/stream`, {
+  const response = await fetch(`${getApiBase()}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

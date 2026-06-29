@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Placeholder sidecar wrapper (Batch 1). Batch 2 replaces with PyInstaller binary.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
+cd "$ROOT"
+exec uv run infinite-canvas "$@"

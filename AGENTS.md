@@ -156,7 +156,9 @@ uv sync && uv run infinite-canvas --port 3000
 pnpm install && pnpm --filter web dev
 
 # 桌面
-pnpm --filter desktop tauri dev
+pnpm desktop:dev
+# 或
+pnpm --filter desktop dev
 ```
 
 Sidecar 默认数据目录：`~/.infinite-canvas/`。开发可用 `--data-dir ./.infinite-canvas-dev`。

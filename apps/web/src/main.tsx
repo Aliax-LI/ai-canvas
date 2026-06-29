@@ -6,9 +6,16 @@ import "@fontsource/inter/600.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@/styles/globals.css";
 import { App } from "./app/App";
+import { bootstrapDesktopApi } from "@/lib/api/desktop-bootstrap";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+async function bootstrap() {
+  await bootstrapDesktopApi();
+
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+}
+
+void bootstrap();

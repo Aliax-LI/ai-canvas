@@ -12,7 +12,7 @@ import type {
   ProjectRecord,
 } from "./types";
 
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
+import { getApiBase } from "@/lib/api/base";
 
 export function newCanvasClientId(): string {
   return crypto.randomUUID();
@@ -144,7 +144,7 @@ export function createCanvasNode(
 export async function uploadCanvasMedia(files: File[]): Promise<{ url: string; name: string }[]> {
   const form = new FormData();
   for (const file of files) form.append("files", file);
-  const response = await fetch(`${API_BASE}/ai/upload`, { method: "POST", body: form });
+  const response = await fetch(`${getApiBase()}/ai/upload`, { method: "POST", body: form });
   const data = (await response.json()) as { files?: { url: string; name: string }[] };
   if (!response.ok) throw new Error("上传失败");
   return data.files ?? [];
@@ -320,8 +320,7 @@ export async function uploadUrlToComfy(url: string): Promise<string> {
   const filename = url.split("/").pop()?.split("?")[0] || `canvas_${Date.now()}.png`;
   const form = new FormData();
   form.append("files", blob, filename);
-  const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
-  const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: form });
+  const res = await fetch(`${getApiBase()}/upload`, { method: "POST", body: form });
   const data = (await res.json()) as { files?: { comfy_name?: string; name?: string }[] };
   if (!res.ok) throw new Error("图片上传到 ComfyUI 失败");
   return data.files?.[0]?.comfy_name || filename;

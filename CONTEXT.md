@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M9 — 无限画布 Batch 5 完成`（LTX 时间轴 + 工作流 + parallel loop；Tauri → M10）
+**当前阶段**：`M10 — Tauri 2 桌面端 Batch 1 完成`（壳 + dev sidecar 生命周期；Batch 2 → PyInstaller 打包）
 
 **当前里程碑进度**：
 
@@ -33,7 +33,7 @@
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
 | M9 无限画布 | 🟡 Batch 5 完成 | LTX 时间轴 + 工作流 + reorderInput + parallel loop |
-| M10 Tauri 2 桌面 | ⚪ 待做 | sidecar、托盘、Win/macOS 打包 |
+| M10 Tauri 2 桌面 | 🟡 Batch 1 完成 | Tauri 2 壳、dev sidecar、托盘、API base 注入 |
 
 ---
 
@@ -74,6 +74,50 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+---
+
+### 2026-06-29 — M10 Batch 1：Tauri 2 桌面壳 + sidecar 生命周期
+
+**变更摘要**
+
+- 新建 **`apps/desktop/`**（Tauri 2）：`pnpm desktop:dev` → `tauri dev`
+- Rust **`sidecar.rs`**：dev 模式 `uv run infinite-canvas --host 127.0.0.1 --port {3000+} --data-dir .infinite-canvas-dev`；轮询 `/api/app-info` 60s；关窗/退出 kill 子进程
+- **系统托盘**：显示窗口、退出（退出时 kill sidecar）
+- 前端 **`lib/api/base.ts` + `desktop-bootstrap.ts`**：注入 `window.__INFINITE_CANVAS_API__` / `__INFINITE_CANVAS_ORIGIN__`；lazy API client
+- **`tauri.conf.json`**：`beforeDevCommand` → web dev；`frontendDist` → `apps/web/dist`；CSP 允许 localhost；`externalBin` 占位
+- **`scripts/build-sidecar.sh/.ps1`**：PyInstaller 打包占位文档
+- E2E stub：`tests/e2e/desktop-sidecar.spec.ts`；验证清单 `docs/superpowers/plans/2026-06-29-m10-tauri-desktop.md`
+
+**影响路径**
+
+- `apps/desktop/`（package.json、src-tauri/*、README）
+- `apps/web/src/lib/api/base.ts`、`client.ts`、`desktop-bootstrap.ts`、`main.tsx`
+- `apps/web/src/features/*/api.ts`、`lib/api/upload.ts`
+- `apps/web/package.json`（`@tauri-apps/api`）
+- `scripts/build-sidecar.sh`、`scripts/build-sidecar.ps1`
+- `package.json`（`desktop:dev`）
+- `tests/e2e/desktop-sidecar.spec.ts`
+- `docs/superpowers/plans/2026-06-29-m10-tauri-desktop.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `cargo check`（apps/desktop/src-tauri）
+- [x] sidecar 健康检查 `GET /api/app-info` → 200（uv CLI 手动）
+- [ ] `pnpm desktop:dev` GUI 手动验证（需图形环境）
+
+**下一步**
+
+- M10 Batch 2：PyInstaller sidecar 二进制、`tauri build`、codesign/notarization
+- defer：单实例锁、deep-link、自动更新、无边框标题栏
+
+**方向对齐**
+
+- 设计规格 §7.1 启动流程（spawn → 健康检查 → WebView → 退出 kill）
+- Rust 仅壳层；业务仍在 Python/React
 
 ---
 

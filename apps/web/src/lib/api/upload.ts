@@ -1,4 +1,4 @@
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
+import { getApiBase } from "./base";
 
 export async function uploadLocalAssets(files: File[], folder = ""): Promise<{ files: { url: string; name: string }[] }> {
   const form = new FormData();
@@ -7,7 +7,7 @@ export async function uploadLocalAssets(files: File[], folder = ""): Promise<{ f
   }
   if (folder) form.append("folder", folder);
 
-  const response = await fetch(`${API_BASE}/local-assets/upload`, {
+  const response = await fetch(`${getApiBase()}/local-assets/upload`, {
     method: "POST",
     body: form,
   });
