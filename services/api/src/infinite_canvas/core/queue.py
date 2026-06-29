@@ -7,3 +7,4 @@ from typing import Any
 
 QUEUE: list[dict[str, Any]] = []
 QUEUE_LOCK = Lock()
+NEXT_TASK_ID = 1

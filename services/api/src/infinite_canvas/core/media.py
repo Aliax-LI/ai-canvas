@@ -42,6 +42,11 @@ def output_path_for(filename: str, category: str = "output") -> Path:
     return assets_output_dir() / filename
 
 
+def output_url_for(filename: str, category: str = "output") -> str:
+    subdir = "input" if category == "input" else "output"
+    return f"/assets/{subdir}/{filename}"
+
+
 def local_media_file_by_basename(name: str) -> Path | None:
     safe = os.path.basename(urllib.parse.unquote(str(name or "")))
     if not safe:

@@ -112,6 +112,12 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+GLOBAL_LOOP = None
+
+
+def set_global_loop(loop) -> None:
+    global GLOBAL_LOOP
+    GLOBAL_LOOP = loop
 
 
 async def websocket_stats_handler(

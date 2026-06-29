@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 4b 资产域 CRUD`（~67 API paths，pytest **62 passed**）
+**当前阶段**：`M1 — 后端 Batch 5 ComfyUI 与工作流域`（~77 API paths，pytest **70 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~67/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~77/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,35 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — Phase 1 Batch 5：ComfyUI 实例/工作流 + generate + canvas-comfy-tasks
+
+**变更摘要**
+
+- 新增 `services/comfyui_workflows.py`、`services/comfyui_generate.py`、`routes/comfyui.py`、`schemas/comfyui.py`
+- **~14** 个端点：`/api/comfyui/instances`、`/api/workflows/*`、`/api/generate`、`/api/canvas-comfy-tasks/*`、`/api/comfyui/upload-base64`、`/api/image-params`
+- 扩展 `core/paths.py`（`workflows_dir`）、`core/comfyui.py`（`save_instances`、负载均衡）、`core/queue.py`（`NEXT_TASK_ID`）、`services/history.py`（`save_to_history`）
+- 新增 `tests/api/test_comfyui.py`、`test_generate.py`；OpenAPI **77 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/core/`、`services/`、`routes/comfyui.py`、`schemas/comfyui.py`
+- `tests/api/test_comfyui.py`、`test_generate.py`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch5.md`
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **70 passed**
+
+**下一步**
+
+- Batch 6：chat 域、runninghub、或 canvas-image-tasks
+
+**方向对齐**
+
+- 工作流目录 `{app_data}/workflows/custom/`；内置 JSON 回退 `coding/Infinite-Canvas/workflows/`；generate 保持 legacy JSON 形状与 QUEUE/history/WS 广播
 
 ---
 

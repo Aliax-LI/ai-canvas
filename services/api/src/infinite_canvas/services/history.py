@@ -113,3 +113,25 @@ def delete_history(timestamp: float) -> dict[str, Any]:
     except Exception as exc:
         print(f"Delete history error: {exc}")
         return {"success": False, "message": str(exc)}
+
+
+def save_to_history(record: dict[str, Any]) -> None:
+    """Append a generation record to history.json (legacy parity)."""
+    import time
+
+    write_path = history_file_for_write()
+    write_path.parent.mkdir(parents=True, exist_ok=True)
+    with HISTORY_LOCK:
+        history: list[dict[str, Any]] = []
+        if write_path.is_file():
+            try:
+                history = json.loads(write_path.read_text(encoding="utf-8"))
+            except Exception:
+                history = []
+        if "timestamp" not in record:
+            record["timestamp"] = time.time()
+        history.insert(0, record)
+        write_path.write_text(
+            json.dumps(history[:5000], ensure_ascii=False, indent=4),
+            encoding="utf-8",
+        )

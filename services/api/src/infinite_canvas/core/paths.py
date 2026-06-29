@@ -94,6 +94,16 @@ def shared_folders_file() -> Path:
     return app_data_dir() / "data" / "shared_folders.json"
 
 
+def workflows_dir() -> Path:
+    """User workflow JSON storage (legacy WORKFLOW_DIR under app data)."""
+    return app_data_dir() / "workflows"
+
+
+def legacy_workflows_dir() -> Path:
+    """Builtin workflow fallback from upstream coding tree."""
+    return coding_root() / "workflows"
+
+
 def app_assets_dir() -> Path:
     """User-writable assets root served at /assets."""
     return app_data_dir() / "assets"
@@ -136,5 +146,6 @@ def ensure_app_data_dirs() -> None:
     (root / "assets" / "output").mkdir(parents=True, exist_ok=True)
     (root / "assets" / "uploads").mkdir(parents=True, exist_ok=True)
     (root / "assets" / "library").mkdir(parents=True, exist_ok=True)
+    (root / "workflows").mkdir(parents=True, exist_ok=True)
     (root / "config").mkdir(parents=True, exist_ok=True)
     api_env_file().touch(exist_ok=True)

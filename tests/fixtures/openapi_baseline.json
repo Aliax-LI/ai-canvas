@@ -2201,6 +2201,504 @@
         }
       }
     },
+    "/api/comfyui/instances": {
+      "get": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Get Comfyui Instances",
+        "operationId": "get_comfyui_instances_api_comfyui_instances_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Put Comfyui Instances",
+        "operationId": "put_comfyui_instances_api_comfyui_instances_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComfyInstancesPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workflows": {
+      "get": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "List Workflows",
+        "operationId": "list_workflows_api_workflows_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Upload Workflow",
+        "operationId": "upload_workflow_api_workflows_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workflows/{name}": {
+      "get": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Get Workflow",
+        "operationId": "get_workflow_api_workflows__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Delete Workflow",
+        "operationId": "delete_workflow_api_workflows__name__delete",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workflows/{name}/config": {
+      "put": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Save Workflow Config",
+        "operationId": "save_workflow_config_api_workflows__name__config_put",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workflows/{name}/run": {
+      "post": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Run Workflow",
+        "operationId": "run_workflow_api_workflows__name__run_post",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate": {
+      "post": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Generate Api",
+        "operationId": "generate_api_api_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-comfy-tasks": {
+      "post": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Create Canvas Comfy Task",
+        "operationId": "create_canvas_comfy_task_api_canvas_comfy_tasks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-comfy-tasks/{task_id}": {
+      "get": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Get Canvas Comfy Task",
+        "operationId": "get_canvas_comfy_task_api_canvas_comfy_tasks__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comfyui/upload-base64": {
+      "post": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Upload Comfyui Base64",
+        "operationId": "upload_comfyui_base64_api_comfyui_upload_base64_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Base64UploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/image-params": {
+      "get": {
+        "tags": [
+          "comfyui"
+        ],
+        "summary": "Image Params",
+        "operationId": "image_params_api_image_params_get",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Provider Id"
+            }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Model"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/canvases": {
       "get": {
         "tags": [
@@ -3722,6 +4220,27 @@
         "type": "object",
         "title": "AssetLibraryRequest"
       },
+      "Base64UploadRequest": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "title": "Data",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "Base64UploadRequest"
+      },
       "Body_upload_image_api_upload_post": {
         "properties": {
           "files": {
@@ -3969,6 +4488,20 @@
         "type": "object",
         "title": "CanvasSaveRequest"
       },
+      "ComfyInstancesPayload": {
+        "properties": {
+          "instances": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Instances",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "ComfyInstancesPayload"
+      },
       "ConversationCreateRequest": {
         "properties": {
           "title": {
@@ -3992,6 +4525,53 @@
           "timestamp"
         ],
         "title": "DeleteHistoryRequest"
+      },
+      "GenerateRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "default": ""
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 1024
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 1024
+          },
+          "workflow_json": {
+            "type": "string",
+            "title": "Workflow Json",
+            "default": "Z-Image.json"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params",
+            "default": {}
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "zimage"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id",
+            "default": ""
+          },
+          "convert_to_jpg": {
+            "type": "boolean",
+            "title": "Convert To Jpg",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "GenerateRequest"
       },
       "HTTPValidationError": {
         "properties": {
@@ -4473,6 +5053,155 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WorkflowConfig": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": ""
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/WorkflowField"
+            },
+            "type": "array",
+            "title": "Fields",
+            "default": []
+          },
+          "mini_cards": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Mini Cards",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "WorkflowConfig"
+      },
+      "WorkflowField": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "node": {
+            "type": "string",
+            "title": "Node",
+            "default": ""
+          },
+          "input": {
+            "type": "string",
+            "title": "Input",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "text"
+          },
+          "default": {
+            "title": "Default"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Options",
+            "default": []
+          },
+          "random_enabled": {
+            "type": "boolean",
+            "title": "Random Enabled",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "WorkflowField"
+      },
+      "WorkflowRunRequest": {
+        "properties": {
+          "fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Fields",
+            "default": {}
+          },
+          "config": {
+            "$ref": "#/components/schemas/WorkflowConfig"
+          },
+          "client_id": {
+            "type": "string",
+            "title": "Client Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "config"
+        ],
+        "title": "WorkflowRunRequest"
+      },
+      "WorkflowUploadRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "workflow": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Workflow"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "workflow"
+        ],
+        "title": "WorkflowUploadRequest"
       }
     }
   }

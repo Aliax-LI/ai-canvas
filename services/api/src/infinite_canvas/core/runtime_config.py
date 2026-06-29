@@ -76,7 +76,7 @@ MODELSCOPE_CHAT_MODELS = list(
 def reload_env_globals() -> None:
     """Sync os.environ values back to module-level globals after provider save."""
     global MODELSCOPE_API_KEY, AI_API_KEY, AI_BASE_URL
-    global IMAGE_MODELS, CHAT_MODELS, VIDEO_MODELS, MODELSCOPE_CHAT_MODELS
+    global IMAGE_MODELS, CHAT_MODELS, VIDEO_MODELS, MODELSCOPE_CHAT_MODELS, COMFYUI_INSTANCES
 
     MODELSCOPE_API_KEY = os.getenv("MODELSCOPE_API_KEY", "")
     AI_API_KEY = os.getenv("COMFLY_API_KEY", "")
@@ -92,3 +92,12 @@ def reload_env_globals() -> None:
     MODELSCOPE_CHAT_MODELS = list(
         dict.fromkeys([m for m in [*MODELSCOPE_DEFAULT_CHAT_MODELS, *_configured] if m])
     )
+    COMFYUI_INSTANCES = [
+        s.strip() for s in os.getenv("COMFYUI_INSTANCES", "127.0.0.1:8188").split(",") if s.strip()
+    ]
+    try:
+        from infinite_canvas.core.comfyui import reload_comfyui_instances
+
+        reload_comfyui_instances()
+    except Exception:
+        pass

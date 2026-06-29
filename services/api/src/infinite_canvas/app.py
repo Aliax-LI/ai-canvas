@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from fastapi import FastAPI, WebSocket
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from infinite_canvas import __version__
 from infinite_canvas.core.env_file import ensure_runtime_config_files, load_env_file
 from infinite_canvas.core.database import init_database, use_sqlite_storage
-from infinite_canvas.core.websocket import websocket_stats_handler
+from infinite_canvas.core.websocket import set_global_loop, websocket_stats_handler
 from infinite_canvas.core.paths import (
     app_assets_dir,
     ensure_app_data_dirs,
@@ -36,6 +38,10 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router)
+
+    @app.on_event("startup")
+    async def _on_startup() -> None:
+        set_global_loop(asyncio.get_running_loop())
 
     @app.websocket("/ws/stats")
     async def websocket_stats(websocket: WebSocket, client_id: str | None = None):
