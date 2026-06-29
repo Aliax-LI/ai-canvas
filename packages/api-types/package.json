@@ -1,0 +1,19 @@
+{
+  "name": "@infinite-canvas/api-types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "generate": "node ./scripts/generate-from-openapi.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

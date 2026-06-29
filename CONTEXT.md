@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M2–M3 — 后端 Batch 9 完成，消除全部 501 stub`（**126** API paths，pytest **106 passed**）
+**当前阶段**：`M4 — 前端 React 脚手架启动`（pnpm monorepo + Design System；后端 **126** paths / pytest **106 passed** 已闭环）
 
 **当前里程碑进度**：
 
@@ -27,7 +27,7 @@
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
 | M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths；Avatar/多平台生图/Canvas 视频全分支 parity |
-| M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
+| M4–M7 前端 React | 🟡 进行中 | monorepo + `apps/web` Design System 脚手架；14 页 + 双画布待迁移 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
 ---
@@ -45,15 +45,17 @@
 
 | 原 HTML | 计划路由 | 迁移状态 |
 |---------|----------|----------|
-| index.html | `/` | ⚪ |
-| canvas-list.html | `/canvases` | ⚪ |
-| canvas.html | `/canvas/:id` | ⚪ |
-| smart-canvas.html | `/smart/:id` | ⚪ |
-| asset-manager.html | `/assets` | ⚪ |
-| api-settings.html | `/settings/api` | ⚪ |
-| comfyui-settings.html | `/settings/comfyui` | ⚪ |
-| gpt-chat.html | `/chat` | ⚪ |
-| zimage / enhance / klein / online / angle | `/tools/*` | ⚪ |
+| index.html | `/` | 🟡 路由占位 |
+| canvas-list.html | `/canvases` | 🟡 路由占位 |
+| canvas.html | `/canvas/:id` | 🟡 Shell + 占位 |
+| smart-canvas.html | `/smart/:id` | 🟡 路由占位 |
+| asset-manager.html | `/assets` | 🟡 路由占位 |
+| api-settings.html | `/settings/api` | 🟡 路由占位 |
+| comfyui-settings.html | `/settings/comfyui` | 🟡 路由占位 |
+| gpt-chat.html | `/chat` | 🟡 路由占位 |
+| zimage / enhance / klein / online / angle | `/tools/*` | 🟡 路由占位 |
+
+> **M4 脚手架**（2026-06-29）：pnpm workspace、`apps/web`（Vite + shadcn + tokens + 产品型/工具型 Shell）、`packages/api-types` / `canvas-schema`、Playwright E2E happy path。业务逻辑均为 ⚪。
 
 ### 外部集成（v1 保持行为）
 
@@ -70,9 +72,74 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 ---
 
----
+### 2026-06-29 — M4 前端 monorepo 与 Design System 脚手架
+
+**变更摘要**
+
+- 根目录 **pnpm monorepo**：`package.json`（`dev`/`build`/`lint`/`test:e2e` 脚本）、`pnpm-workspace.yaml`（`apps/*`、`packages/*`）
+- **`apps/web`**：Vite 6 + React 18 + TypeScript + Tailwind 3 + shadcn/ui（new-york）；已装 button/card/input/tabs/dialog/command/sheet/sonner
+- **`DESIGN.md` Token 落地**：`src/styles/tokens.css`（light/dark + 画布专用变量）、`globals.css`；`lib/theme.ts` 主题持久化（兼容 legacy `canvas_theme`）
+- **B+ 布局壳**：`components/shell/Sidebar.tsx`（可折叠侧栏）；`lib/navigation.ts` 映射 14 页路由与面包屑
+- **API 层**：`lib/api/client.ts` 复用 `@infinite-canvas/api-types`；Vite proxy 对接后端 `/api`、`/ws`、`/static`、`/assets`、`/output`
+- **`packages/api-types`**：`createApiClient()` 泛型 HTTP 客户端 + OpenAPI 生成占位脚本（读 `openapi_baseline.json`）
+- **`packages/canvas-schema`**：画布节点注册表类型 stub（M5+ 分批填充）
+- **待补**：`main.tsx` / `App.tsx`、React Router 布局、TanStack Query / Zustand、业务 feature 页
+
+**影响路径**
+
+- `package.json`、`pnpm-workspace.yaml`（根目录，未跟踪）
+- `apps/web/`（Vite、shadcn、styles、shell、lib）
+- `packages/api-types/`、`packages/canvas-schema/`
+
+**验证项**
+
+- [ ] `pnpm install && pnpm --filter web dev`（需补齐 App 入口后）
+- [ ] tokens.css 与 `DESIGN.md` §2 变量对照
+- [ ] Vite proxy 联调 `uv run infinite-canvas --port 3000`
+
+**下一步**
+
+- 补齐 `main.tsx` + Router 布局壳（Sidebar + Outlet）
+- 按 AGENTS.md 顺序首迁设置页（`/settings/api` → `/settings/comfyui`）
+
+**方向对齐**
+
+- M4 启动符合迁移顺序（Design System → 设置页 → … → canvas 最后）；无 API 契约变更；strict parity 页面迁移尚未开始
 
 ---
+
+### 2026-06-29 — M4 Phase：Design System + App Shell + 路由脚手架
+
+**变更摘要**
+
+- 新建 pnpm monorepo 根（`package.json`、`pnpm-workspace.yaml`）
+- `apps/web`：React 18 + Vite + Tailwind + shadcn/ui；`tokens.css` 落地 DESIGN.md §2；产品型 B+ Shell（侧栏 64/240px、顶栏面包屑、主题切换 `studio_theme`）与工具型 Canvas Shell stub
+- 14 页路由占位 + Cmd+K Command 面板；`packages/api-types`（client 封装）、`packages/canvas-schema`（节点注册表 stub）
+- Vite 代理 `/api`、`/ws`、`/static`、`/assets`、`/output` → `127.0.0.1:3000`
+- Playwright E2E：`tests/e2e/app-shell.spec.ts`（侧栏、主题、导航 `/canvases`）
+
+**影响路径**
+
+- `package.json`、`pnpm-workspace.yaml`
+- `apps/web/**`
+- `packages/api-types/**`、`packages/canvas-schema/**`
+- `tests/e2e/**`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m4-shell.md`
+
+**验证项**
+
+- `pnpm install && pnpm --filter web build`
+- `pnpm --filter e2e test`
+- 后端 pytest 未改动，仍应全绿
+
+**下一步**
+
+- M4 续：设置页（API / ComfyUI）业务迁移
+- 素材库、聊天、tools 页逐批 parity
+
+**方向对齐**
+
+- v1 strict parity；本批仅 Shell + 路由占位，无 API 契约变更
 
 ---
 

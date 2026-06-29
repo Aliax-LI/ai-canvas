@@ -21,6 +21,8 @@ node_modules/
 .pnpm-store/
 dist/
 *.tsbuildinfo
+tests/e2e/test-results/
+tests/e2e/playwright-report/
 
 # Tauri
 apps/desktop/src-tauri/target/
