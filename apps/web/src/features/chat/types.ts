@@ -28,5 +28,5 @@ export interface AiConfig {
   chat_models: string[];
   image_models: string[];
   video_models: string[];
-  api_providers: { id: string; name: string; primary?: boolean; chat_models?: string[] }[];
+  api_providers: { id: string; name: string; primary?: boolean; chat_models?: string[]; image_models?: string[] }[];
 }

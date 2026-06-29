@@ -18,6 +18,7 @@ export default defineConfig({
       "/static": { target: "http://127.0.0.1:3000", changeOrigin: true },
       "/assets": { target: "http://127.0.0.1:3000", changeOrigin: true },
       "/output": { target: "http://127.0.0.1:3000", changeOrigin: true },
+      "/generate": { target: "http://127.0.0.1:3000", changeOrigin: true },
     },
   },
 });

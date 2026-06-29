@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M6 — 前端核心页迁移进行中`（画布列表 / 素材库 / GPT 对话核心 CRUD 已接入）
+**当前阶段**：`M7 — Studio 工具页迁移完成`（5 个 tools 核心生成 + 历史；双画布待做）
 
 **当前里程碑进度**：
 
@@ -26,11 +26,12 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths；Avatar/多平台生图/Canvas 视频全分支 parity |
-| M4 前端 Shell | ✅ 完成 | pnpm monorepo、Design System、14 路由占位、E2E app-shell |
-| M5 设置页 | ✅ 完成 | API / ComfyUI 设置核心 CRUD |
-| M6–M7 前端业务页 | 🟡 进行中 | **M6** 画布列表/素材库/对话；tools + 双画布待做 |
-| M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
+| M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths |
+| M4 前端 Shell | ✅ 完成 | pnpm monorepo、Design System、14 路由 |
+| M5 设置页 | ✅ 完成 | API / ComfyUI 设置 |
+| M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
+| M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
+| M8–M9 双画布 + Tauri | ⚪ 未开始 | 无限画布、智能画布、桌面端 |
 
 ---
 
@@ -55,7 +56,7 @@
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
 | comfyui-settings.html | `/settings/comfyui` | 🟡 实例+工作流配置 |
 | gpt-chat.html | `/chat` | 🟡 流式对话核心 |
-| zimage / enhance / klein / online / angle | `/tools/*` | 🟡 路由占位 |
+| zimage / enhance / klein / online / angle | `/tools/*` | 🟡 核心生成 |
 
 > **M4 脚手架**（2026-06-29）：pnpm workspace、`apps/web`（Vite + shadcn + tokens + 产品型/工具型 Shell）、`packages/api-types` / `canvas-schema`、Playwright E2E happy path。业务逻辑均为 ⚪。
 
@@ -71,6 +72,40 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M7 前端：Studio 五个工具页
+
+**变更摘要**
+
+- **`/tools/zimage`**：本地 ComfyUI / ModelScope 云端文生图 + 历史
+- **`/tools/enhance`**：图片上传、强度调节、本地 Enhance / MS Klein LoRA
+- **`/tools/klein`**：多图上传、本地 Flux2-Klein / 云端 MS 编辑
+- **`/tools/online`**：平台/模型/尺寸、参考图、`/api/online-image`
+- **`/tools/angle`**：方位角/仰角滑块、云端 Qwen 视角生成 + poll
+- 共享 `ToolLayout`、`HistoryMasonry`、`features/tools/api.ts`；Vite 代理 `/generate`
+
+**影响路径**
+
+- `apps/web/src/features/tools/**`
+- `apps/web/vite.config.ts`
+- `tests/e2e/m7-tools.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m7-tools.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **8 passed**
+
+**下一步**
+
+- M8 无限画布 `/canvas/:id`（@xyflow/react + 节点注册表）
+- M9 智能画布 `/smart/:id`
+
+**方向对齐**
+
+- 14 页中 12 页已有核心 UI；剩余双画布为 v1 最大块
 
 ---
 
