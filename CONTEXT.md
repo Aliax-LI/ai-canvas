@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M8 — 智能画布迁移完成`（卡片 CRUD + 自动保存；无限画布待做）
+**当前阶段**：`M9 — 无限画布 Batch 1 完成`（@xyflow/react + 5 类节点；Tauri 待做）
 
 **当前里程碑进度**：
 
@@ -32,7 +32,7 @@
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
-| M9 无限画布 + Tauri | ⚪ 未开始 | `/canvas/:id`、桌面端 |
+| M9 无限画布 + Tauri | 🟡 进行中 | Batch 1：`/canvas/:id` 编辑器 + 5 节点；Tauri 待做 |
 
 ---
 
@@ -51,7 +51,7 @@
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
-| canvas.html | `/canvas/:id` | 🟡 Shell + 占位 |
+| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 5 节点 Batch 1 |
 | smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
@@ -73,6 +73,43 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M9 前端：无限画布 `/canvas/:id`（Batch 1）
+
+**变更摘要**
+
+- 安装 **`@xyflow/react`**；`CanvasEditorPage` 替换为可用节点图编辑器
+- `GET/PUT /api/canvases/:id` 读写画布 JSON（`nodes` / `connections` / `viewport` 与上游兼容）
+- 450ms 防抖自动保存；点阵网格背景（`--canvas-bg` / `--canvas-grid`）
+- **`packages/canvas-schema/src/nodes.ts`**：节点注册表 + Batch 1 五类节点默认 data
+- React 节点组件：`image` · `prompt` · `output` · `group` · `generator`（运行调 `/api/canvas-image-tasks`）
+- xyflow edges ↔ `connections[{id,from,to}]`；左侧 FAB 创建菜单
+- `CanvasShell` 顶栏：标题编辑 + 保存状态（context 联动）
+- E2E：`tests/e2e/m9-canvas-editor.spec.ts`
+- 计划：`docs/superpowers/plans/2026-06-29-phase2-frontend-m9-canvas-editor.md`
+
+**影响路径**
+
+- `apps/web/package.json`、`apps/web/src/features/canvas/**`
+- `apps/web/src/components/shell/CanvasShell.tsx`
+- `packages/canvas-schema/src/**`
+- `tests/e2e/m9-canvas-editor.spec.ts`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **10 passed**
+
+**下一步**
+
+- M9 Batch 2：msgen / comfy / rh / video / llm / loop 等节点 parity
+- Tauri 2 桌面打包
+
+**方向对齐**
+
+- 14 页前端 UI 已全部有核心实现；无限画布剩余节点类型与运行队列待补
 
 ---
 
