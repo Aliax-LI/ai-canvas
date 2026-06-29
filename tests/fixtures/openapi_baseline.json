@@ -429,6 +429,552 @@
         }
       }
     },
+    "/api/ai/upload": {
+      "post": {
+        "tags": [
+          "ai-upload"
+        ],
+        "summary": "Upload Ai Reference",
+        "operationId": "upload_ai_reference_api_ai_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_ai_reference_api_ai_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/upload-base64": {
+      "post": {
+        "tags": [
+          "ai-upload"
+        ],
+        "summary": "Upload Ai Base64",
+        "operationId": "upload_ai_base64_api_ai_upload_base64_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Base64UploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/import-local-image": {
+      "post": {
+        "tags": [
+          "ai-upload"
+        ],
+        "summary": "Import Local Ai Reference",
+        "operationId": "import_local_ai_reference_api_ai_import_local_image_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalImageImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/online-image": {
+      "post": {
+        "tags": [
+          "online-image"
+        ],
+        "summary": "Online Image",
+        "operationId": "online_image_api_online_image_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnlineImageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/image-task-query": {
+      "post": {
+        "tags": [
+          "online-image"
+        ],
+        "summary": "Query Image Task",
+        "operationId": "query_image_task_api_image_task_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageTaskQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-image-tasks": {
+      "post": {
+        "tags": [
+          "online-image"
+        ],
+        "summary": "Create Canvas Image Task",
+        "operationId": "create_canvas_image_task_api_canvas_image_tasks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnlineImageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-image-tasks/{task_id}": {
+      "get": {
+        "tags": [
+          "online-image"
+        ],
+        "summary": "Get Canvas Image Task",
+        "operationId": "get_canvas_image_task_api_canvas_image_tasks__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-assets": {
+      "get": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "List Canvas Assets",
+        "operationId": "list_canvas_assets_api_canvas_assets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/smart-canvas/prompt-templates": {
+      "get": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Smart Canvas Prompt Templates",
+        "operationId": "smart_canvas_prompt_templates_api_smart_canvas_prompt_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-assets/check": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Check Canvas Assets",
+        "operationId": "check_canvas_assets_api_canvas_assets_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasAssetCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-assets/download": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Download Canvas Assets",
+        "operationId": "download_canvas_assets_api_canvas_assets_download_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasAssetDownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-workflows/export": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Export Canvas Workflow",
+        "operationId": "export_canvas_workflow_api_canvas_workflows_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasWorkflowExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-workflows/export-to-library": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Export Canvas Workflow To Library",
+        "operationId": "export_canvas_workflow_to_library_api_canvas_workflows_export_to_library_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasWorkflowExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/workflows/upload": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Upload Asset Library Workflows",
+        "operationId": "upload_asset_library_workflows_api_asset_library_workflows_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_asset_library_workflows_api_asset_library_workflows_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-workflows/import": {
+      "post": {
+        "tags": [
+          "canvas-assets"
+        ],
+        "summary": "Import Canvas Workflow",
+        "operationId": "import_canvas_workflow_api_canvas_workflows_import_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_canvas_workflow_api_canvas_workflows_import_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/local-assets/upload": {
       "post": {
         "tags": [
@@ -4388,6 +4934,37 @@
   },
   "components": {
     "schemas": {
+      "AIReference": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": ""
+          },
+          "mime": {
+            "type": "string",
+            "title": "Mime",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AIReference"
+      },
       "ApiProviderPayload": {
         "properties": {
           "id": {
@@ -4838,6 +5415,64 @@
         "type": "object",
         "title": "Base64UploadRequest"
       },
+      "Body_import_canvas_workflow_api_canvas_workflows_import_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_canvas_workflow_api_canvas_workflows_import_post"
+      },
+      "Body_upload_ai_reference_api_ai_upload_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_ai_reference_api_ai_upload_post"
+      },
+      "Body_upload_asset_library_workflows_api_asset_library_workflows_upload_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "category_id": {
+            "type": "string",
+            "title": "Category Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_asset_library_workflows_api_asset_library_workflows_upload_post"
+      },
       "Body_upload_image_api_upload_post": {
         "properties": {
           "files": {
@@ -4876,6 +5511,45 @@
           "files"
         ],
         "title": "Body_upload_local_assets_api_local_assets_upload_post"
+      },
+      "CanvasAssetCheckRequest": {
+        "properties": {
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urls"
+          }
+        },
+        "type": "object",
+        "title": "CanvasAssetCheckRequest"
+      },
+      "CanvasAssetDownloadRequest": {
+        "properties": {
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urls"
+          },
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "default": "canvas-output-images.zip"
+          }
+        },
+        "type": "object",
+        "title": "CanvasAssetDownloadRequest"
       },
       "CanvasCreateRequest": {
         "properties": {
@@ -5085,6 +5759,53 @@
         "type": "object",
         "title": "CanvasSaveRequest"
       },
+      "CanvasWorkflowExportRequest": {
+        "properties": {
+          "nodes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "connections": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Connections"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "default": "canvas-workflow.zip"
+          },
+          "include_resources": {
+            "type": "boolean",
+            "title": "Include Resources",
+            "default": true
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "category_id": {
+            "type": "string",
+            "title": "Category Id",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "CanvasWorkflowExportRequest"
+      },
       "ComfyInstancesPayload": {
         "properties": {
           "instances": {
@@ -5182,6 +5903,26 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImageTaskQueryRequest": {
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": "comfly"
+          },
+          "task_id": {
+            "type": "string",
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Task Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "title": "ImageTaskQueryRequest"
       },
       "JimengHelpRequest": {
         "properties": {
@@ -5432,6 +6173,24 @@
         "type": "object",
         "title": "LocalAssetUrlImportRequest"
       },
+      "LocalImageImportRequest": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "default": ""
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Paths"
+          }
+        },
+        "type": "object",
+        "title": "LocalImageImportRequest"
+      },
       "MigrateRequest": {
         "properties": {
           "force": {
@@ -5442,6 +6201,53 @@
         },
         "type": "object",
         "title": "MigrateRequest"
+      },
+      "OnlineImageRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Prompt"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "size": {
+            "type": "string",
+            "title": "Size",
+            "default": "1024x1024"
+          },
+          "quality": {
+            "type": "string",
+            "title": "Quality",
+            "default": "auto"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N",
+            "default": 1
+          },
+          "reference_images": {
+            "items": {
+              "$ref": "#/components/schemas/AIReference"
+            },
+            "type": "array",
+            "title": "Reference Images"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "title": "OnlineImageRequest"
       },
       "ProjectCreateRequest": {
         "properties": {

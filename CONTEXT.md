@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 6 RunningHub 与即梦 jimeng`（~93 API paths，pytest **76 passed**）
+**当前阶段**：`M1 — 后端 Batch 7 AI 上传、画布资产与在线生图`（~108 API paths，pytest **90 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~97/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~108/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,42 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+---
+
+### 2026-06-29 — Phase 1 Batch 7：AI 上传、画布资产与在线生图
+
+**变更摘要**
+
+- 新增 `services/ai_upload.py`、`routes/ai_upload.py`（**3** 端点：`/api/ai/upload`、`upload-base64`、`import-local-image`）
+- 新增 `services/canvas_assets.py`、`services/canvas_workflows.py`、`routes/canvas_assets.py`（**8** 端点：canvas-assets、prompt-templates、check、download、workflow export/import/library）
+- 新增 `services/online_image.py`、`routes/online_image.py`（**4** 端点：online-image、image-task-query、canvas-image-tasks）；OpenAI 兼容同步生图 + APIMart 轮询；复用 `comfyui_generate.CANVAS_TASKS`
+- 扩展 `asset_library_store`（`make_workflow_library_item_from_bytes`、`asset_library_workflow_category`）
+- 新增 `tests/api/test_ai_upload.py`、`test_canvas_assets.py`、`test_online_image.py`；OpenAPI **108 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/ai_upload.py`、`canvas_assets.py`、`canvas_workflows.py`、`online_image.py`
+- `services/api/src/infinite_canvas/routes/ai_upload.py`、`canvas_assets.py`、`online_image.py`、`routes/__init__.py`
+- `services/api/src/infinite_canvas/schemas/ai_upload.py`、`canvas_assets.py`、`online_image.py`
+- `services/api/src/infinite_canvas/services/asset_library_store.py`
+- `tests/api/test_ai_upload.py`、`test_canvas_assets.py`、`test_online_image.py`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch7.md`
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **90 passed**
+- [x] `uv run python scripts/export_openapi_baseline.py` → **108 paths**
+
+**下一步**
+
+- Batch 8：chat 域、canvas-video-tasks、火山 volcengine 生图完整移植
+
+**方向对齐**
+
+- strict parity；AI 参考图落 `assets/input`；画布资产索引扫描全库画布 JSON；非 OpenAI 平台生图 stub 501 待后续批次
 
 ---
 

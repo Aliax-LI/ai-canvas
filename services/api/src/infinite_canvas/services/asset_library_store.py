@@ -277,3 +277,58 @@ def find_asset_item_in_library(
                 if item.get("id") == item_id:
                     return item
     return None
+
+
+def asset_library_workflow_category(
+    lib: dict[str, Any], library_id: str = "", category_id: str = ""
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    from fastapi import HTTPException
+
+    library = find_asset_library(lib, library_id)
+    if not library:
+        raise HTTPException(status_code=404, detail="资产库不存在")
+    categories: list[dict[str, Any]] = library.setdefault("categories", [])
+    cat: dict[str, Any] | None = None
+    if category_id:
+        cat = next((c for c in categories if c.get("id") == category_id), None)
+        if not cat:
+            raise HTTPException(status_code=404, detail="工作流分类不存在")
+        if cat.get("type") != "workflow":
+            raise HTTPException(status_code=400, detail="目标分组不是工作流分类")
+    if not cat:
+        cat = next((c for c in categories if c.get("type") == "workflow"), None)
+    if not cat:
+        cat = {"id": f"wf_{uuid.uuid4().hex[:12]}", "name": "工作流", "type": "workflow", "items": []}
+        categories.append(cat)
+    lib["active_library_id"] = library.get("id") or lib.get("active_library_id")
+    return library, cat
+
+
+def make_workflow_library_item_from_bytes(raw: bytes, filename: str, name: str = "") -> dict[str, Any]:
+    from fastapi import HTTPException
+
+    from infinite_canvas.core.media import sanitize_export_filename
+
+    if not raw:
+        raise HTTPException(status_code=400, detail="工作流文件为空")
+    safe_filename = sanitize_export_filename(filename or "canvas-workflow.zip", "canvas-workflow.zip")
+    ext = os.path.splitext(safe_filename)[1].lower()
+    if ext not in {".json", ".zip"}:
+        safe_filename += ".zip"
+        ext = ".zip"
+    dest_name = f"workflow_{uuid.uuid4().hex[:12]}_{safe_filename}"
+    lib_dir = asset_library_dir()
+    lib_dir.mkdir(parents=True, exist_ok=True)
+    dest_path = lib_dir / dest_name
+    dest_path.write_bytes(raw)
+    display_name = sanitize_asset_name(name or os.path.splitext(safe_filename)[0], "工作流")
+    return {
+        "id": f"wf_{uuid.uuid4().hex[:12]}",
+        "name": display_name[:120],
+        "url": f"/assets/library/{dest_name}",
+        "kind": "workflow",
+        "type": "workflow",
+        "format": "zip" if ext == ".zip" else "json",
+        "size": len(raw),
+        "created_at": now_ms(),
+    }
