@@ -159,7 +159,7 @@ async def test_asset_library_crud_flow(client, data_dir):
 
 
 @pytest.mark.asyncio
-async def test_avatar_endpoints_return_501(client, data_dir):
+async def test_avatar_register_and_status_mock(client, data_dir, monkeypatch):
     lib = (await client.get("/api/asset-library")).json()["library"]
     cat = _default_image_category(lib)
     source_url = await _upload_source_asset(client, data_dir)
@@ -176,17 +176,35 @@ async def test_avatar_endpoints_return_501(client, data_dir):
             },
         )
     item_id = add.json()["item"]["id"]
-    reg = await client.post(
-        f"/api/asset-library/items/{item_id}/register-avatar",
-        json={"library_id": lib["active_library_id"], "provider_id": "test"},
-    )
-    assert reg.status_code == 501
-    assert reg.json()["detail"] == "尚未迁移"
-    status = await client.post(
-        f"/api/asset-library/items/{item_id}/avatar-status",
-        json={"library_id": lib["active_library_id"], "provider_id": "test"},
-    )
-    assert status.status_code == 501
+    fake_provider = {"id": "apimart", "name": "APIMart", "protocol": "apimart", "base_url": "https://api.apimart.ai/v1", "enabled": True}
+    with (
+        patch("infinite_canvas.services.avatar.provider_store.get_api_provider", return_value=fake_provider),
+        patch(
+            "infinite_canvas.services.avatar.upload_media_for_apimart",
+            new=AsyncMock(return_value="https://cdn.example/asset.png"),
+        ),
+        patch(
+            "infinite_canvas.services.avatar.submit_apimart_avatar_asset",
+            new=AsyncMock(return_value="task-avatar-1"),
+        ),
+    ):
+        reg = await client.post(
+            f"/api/asset-library/items/{item_id}/register-avatar",
+            json={"library_id": lib["active_library_id"], "provider_id": "apimart", "project_name": "default"},
+        )
+    assert reg.status_code == 200
+    item = reg.json()["item"]
+    assert item["registrations"]["apimart"]["task_id"] == "task-avatar-1"
+    with patch(
+        "infinite_canvas.services.avatar.check_apimart_avatar_task",
+        new=AsyncMock(return_value={"status": "Active", "asset_uri": "asset://abc123", "detail": ""}),
+    ), patch("infinite_canvas.services.avatar.provider_store.get_api_provider", return_value=fake_provider):
+        status = await client.post(
+            f"/api/asset-library/items/{item_id}/avatar-status",
+            json={"library_id": lib["active_library_id"], "provider_id": "apimart"},
+        )
+    assert status.status_code == 200
+    assert status.json()["item"]["registrations"]["apimart"]["status"] == "Active"
 
 
 @pytest.mark.asyncio

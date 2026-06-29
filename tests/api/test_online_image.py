@@ -93,6 +93,31 @@ async def test_online_image_openai_compat(client, data_dir):
 
 
 @pytest.mark.asyncio
+async def test_online_image_modelscope_mock(client, monkeypatch):
+    monkeypatch.setenv("API_PROVIDER_MODELSCOPE_KEY", "ms-key")
+    fake_image = {"type": "url", "value": "https://cdn.example/ms.png"}
+
+    with patch(
+        "infinite_canvas.services.provider_image.generate_modelscope_provider_image",
+        new=AsyncMock(return_value=(fake_image, {"task_status": "SUCCEED"})),
+    ), patch(
+        "infinite_canvas.services.online_image.save_ai_image_to_output",
+        new=AsyncMock(return_value="/assets/output/ms_online.png"),
+    ):
+        response = await client.post(
+            "/api/online-image",
+            json={
+                "prompt": "a blue sky",
+                "provider_id": "modelscope",
+                "model": "Tongyi-MAI/Z-Image-Turbo",
+                "size": "1024x1024",
+            },
+        )
+    assert response.status_code == 200
+    assert response.json()["images"] == ["/assets/output/ms_online.png"]
+
+
+@pytest.mark.asyncio
 async def test_canvas_image_task_lifecycle(client):
     fake_result = {
         "prompt": "test",

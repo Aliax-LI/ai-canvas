@@ -475,11 +475,6 @@ def image_output_meta(url: str, source_item: dict[str, Any] | None = None) -> di
     return meta
 
 
-def _stub_provider_error(provider: dict[str, Any], feature: str) -> None:
-    name = provider.get("name") or provider.get("id")
-    raise HTTPException(status_code=501, detail=f"{name} 的 {feature} 尚未在此迁移批次实现，请使用 OpenAI 兼容平台")
-
-
 async def generate_ai_image(
     prompt: str,
     size: str,
@@ -490,15 +485,25 @@ async def generate_ai_image(
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     provider = provider_store.get_api_provider(provider_id)
     if provider["id"] == "modelscope":
-        _stub_provider_error(provider, "ModelScope 生图")
+        from infinite_canvas.services.provider_image import generate_modelscope_provider_image
+
+        return await generate_modelscope_provider_image(prompt, size, model, reference_images, provider)
     if is_jimeng_provider(provider):
-        _stub_provider_error(provider, "即梦生图（请使用 /api/jimeng 端点）")
+        from infinite_canvas.services.jimeng_generate import generate_jimeng_provider_image
+
+        return await generate_jimeng_provider_image(prompt, size, model, reference_images, provider)
     if is_runninghub_provider(provider):
-        _stub_provider_error(provider, "RunningHub 生图")
+        from infinite_canvas.services.runninghub_provider import generate_runninghub_provider_image
+
+        return await generate_runninghub_provider_image(prompt, size, model, reference_images, provider)
     if asset_ai.effective_protocol(provider, model) == "gemini":
-        _stub_provider_error(provider, "Gemini 生图")
+        from infinite_canvas.services.provider_image import generate_gemini_provider_image
+
+        return await generate_gemini_provider_image(prompt, size, model, reference_images, provider)
     if asset_ai.is_volcengine_provider(provider):
-        _stub_provider_error(provider, "火山引擎生图")
+        from infinite_canvas.services.provider_image import generate_volcengine_provider_image
+
+        return await generate_volcengine_provider_image(prompt, size, model, reference_images, provider)
 
     is_gpt2 = is_gpt_image_2_model(model)
     is_apimart = asset_ai.is_apimart_provider(provider)

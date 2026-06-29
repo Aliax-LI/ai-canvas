@@ -114,6 +114,38 @@ async def test_canvas_video_mock_upstream(client):
 
 
 @pytest.mark.asyncio
+async def test_canvas_video_jimeng_mock(client):
+    fake_provider = {"id": "jimeng", "name": "即梦", "protocol": "jimeng", "enabled": True}
+    with (
+        patch("infinite_canvas.services.canvas_video.provider_store.get_api_provider", return_value=fake_provider),
+        patch(
+            "infinite_canvas.services.canvas_video.generate_jimeng_video",
+            new=AsyncMock(return_value={"videos": ["/assets/output/jimeng_video_mock.mp4"], "task_id": "jim-1", "raw": {}}),
+        ),
+    ):
+        response = await client.post(
+            "/api/canvas-video",
+            json={"prompt": "海浪", "provider_id": "jimeng", "model": "seedance2.0"},
+        )
+    assert response.status_code == 200
+    assert response.json()["videos"] == ["/assets/output/jimeng_video_mock.mp4"]
+
+
+@pytest.mark.asyncio
+async def test_canvas_video_runninghub_mock(client):
+    with patch(
+        "infinite_canvas.services.canvas_video.generate_runninghub_video",
+        new=AsyncMock(return_value={"videos": ["/assets/output/rh_video_mock.mp4"], "task_id": "rh-1", "raw": {}}),
+    ):
+        response = await client.post(
+            "/api/canvas-video",
+            json={"prompt": "城市夜景", "provider_id": "runninghub", "model": "seedance-2.0-global/text-to-video"},
+        )
+    assert response.status_code == 200
+    assert response.json()["videos"] == ["/assets/output/rh_video_mock.mp4"]
+
+
+@pytest.mark.asyncio
 async def test_ms_generate_mock(client):
     class FakeResponse:
         def __init__(self, status_code: int, payload: dict):

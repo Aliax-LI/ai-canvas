@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M2–M3 — 后端 Batch 8 完成，legacy HTTP 路由全覆盖`（**126** API paths，pytest **103 passed**）
+**当前阶段**：`M2–M3 — 后端 Batch 9 完成，消除全部 501 stub`（**126** API paths，pytest **106 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟢 近完成 | 已迁移 **126/123** legacy OpenAPI paths（+3 桌面/数据路由）；**SQLite** 默认存储 |
+| M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths；Avatar/多平台生图/Canvas 视频全分支 parity |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -71,6 +71,38 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 ---
 
 ---
+
+---
+
+---
+
+### 2026-06-29 — Phase 1 Batch 9：Avatar / 多平台生图 / Canvas Video 完整迁移
+
+**变更摘要**
+
+- 消除全部后端 501 stub：资产库 Avatar 注册（APIMart + 火山）、五平台 `generate_ai_image`、画布视频全 provider 分支（即梦/RunningHub/APIMart/火山/Agnes/玉玉 + 轮询）
+- 新增 8 个 service 模块：`avatar`、`apimart_media`、`volcengine_assets`、`provider_helpers`、`provider_image`、`jimeng_generate`、`runninghub_provider`、`video_tasks`；`canvas_video.py` 完整替换为 legacy parity
+- 测试：pytest **106 passed**；OpenAPI baseline **126 paths** 不变
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/{avatar,apimart_media,volcengine_assets,provider_helpers,provider_image,jimeng_generate,runninghub_provider,video_tasks,canvas_video,online_image}.py`
+- `services/api/src/infinite_canvas/routes/asset_libraries.py`
+- `tests/api/test_{asset_library_crud,online_image,canvas_ai}.py`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch9.md`
+
+**验证项**
+
+- `uv run pytest tests/api -v` 全绿
+- `rg '501|尚未迁移' services/` 无匹配
+
+**下一步**
+
+- 启动 M4 前端 React 迁移（Design System → 设置页）
+
+**方向对齐**
+
+- v1 strict parity 后端域已闭环；无 API 契约变更
 
 ---
 

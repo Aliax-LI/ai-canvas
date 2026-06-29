@@ -242,12 +242,16 @@ async def classify_asset_library_items(payload: AssetLibraryClassifyRequest):
 
 @router.post("/api/asset-library/items/{item_id}/register-avatar")
 async def register_asset_library_avatar(item_id: str, payload: AssetAvatarRegisterRequest):
-    raise HTTPException(status_code=501, detail="尚未迁移")
+    from infinite_canvas.services import avatar as avatar_service
+
+    return await avatar_service.register_asset_library_avatar(item_id, payload)
 
 
 @router.post("/api/asset-library/items/{item_id}/avatar-status")
 async def check_asset_library_avatar(item_id: str, payload: AssetAvatarRegisterRequest):
-    raise HTTPException(status_code=501, detail="尚未迁移")
+    from infinite_canvas.services import avatar as avatar_service
+
+    return await avatar_service.check_asset_library_avatar(item_id, payload)
 
 
 @router.delete("/api/asset-library/items/{item_id}")
