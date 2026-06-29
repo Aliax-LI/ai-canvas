@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": ".cursor/hooks/update-context-on-stop.sh",
+        "loop_limit": 1
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": ".cursor/hooks/update-context-on-stop.sh",
+        "loop_limit": 1
+      }
+    ]
+  }
+}

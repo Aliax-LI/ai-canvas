@@ -1,0 +1,61 @@
+# 上游源码（本地只读对照，不纳入版本库）
+/coding/
+
+# Python / uv
+.venv/
+**/.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Node / pnpm
+node_modules/
+**/node_modules/
+.pnpm-store/
+dist/
+*.tsbuildinfo
+
+# Tauri
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/WixTools/
+apps/desktop/src-tauri/gen/
+
+# 用户运行时数据（开发机本地）
+.infinite-canvas/
+data/
+assets/
+output/
+API/.env
+
+# reference 快照（若从 coding 复制，可选忽略大文件）
+reference/static/
+reference/main.py
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# 日志与临时
+*.log
+tmp/
+temp/
+
+# 本地开发数据
+credentials.json
+**/*credentials*.json
+.infinite-canvas-dev/
