@@ -147,7 +147,72 @@ function loopBatchSize(node: Node): number {
   return Math.max(1, Math.min(100, Number(data.imageBatchSize ?? 1) || 1));
 }
 
-/** 串行执行级联（serial loop 模式） */
+const PARALLEL_CONCURRENCY = 3;
+
+function cascadeParallelLimit(order: string[], nodes: Node[], totalRounds: number): number {
+  const hasComfy = order.some((id) => {
+    const n = findNode(nodes, id);
+    return n && nodeType(n) === "comfy";
+  });
+  if (hasComfy) return Math.max(1, Math.min(totalRounds, 2));
+  return Math.max(1, Math.min(totalRounds, PARALLEL_CONCURRENCY));
+}
+
+async function runLimitedCascadeRounds<T>(
+  rounds: T[],
+  limit: number,
+  runner: (round: T) => Promise<void>,
+): Promise<PromiseSettledResult<void>[]> {
+  let next = 0;
+  const workers = Array.from({ length: Math.max(1, Math.min(limit, rounds.length)) }, async () => {
+    while (next < rounds.length) {
+      const round = rounds[next++];
+      await runner(round);
+    }
+  });
+  return Promise.allSettled(workers);
+}
+
+async function runCascadeRound(
+  order: string[],
+  targetId: string,
+  runtime: CascadeRuntime,
+  loopCtx: { index: number; total: number; nodeId: string } | undefined,
+  roundLabel: string,
+  totalRounds: number,
+  loopIndex: number,
+  endIdx: number,
+): Promise<void> {
+  for (let i = 0; i < order.length; i++) {
+    const id = order[i];
+    const idxLabel = `${i + 1}/${order.length}${totalRounds > 1 ? ` · ${loopIndex}/${endIdx}` : ""}`;
+
+    runtime.updateNodeData(id, { runStatus: "queued", runError: "", _cascadeIdx: idxLabel });
+    runtime.updateNodeData(id, { runStatus: "running", _cascadeIdx: idxLabel });
+
+    try {
+      const node = runtime.getNodes().find((n) => n.id === id);
+      if (!node) continue;
+      await runNodeByType(node, { ...runtime, loopCtx, cascadeTargetId: targetId });
+      runtime.updateNodeData(id, { runStatus: "done", running: false, _cascadeIdx: idxLabel });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const roundPrefix = totalRounds > 1 ? `${roundLabel}: ` : "";
+      runtime.updateNodeData(id, {
+        runStatus: "failed",
+        runError: `${roundPrefix}${msg}`,
+        running: false,
+        _cascadeFailed: true,
+      });
+      for (let j = i + 1; j < order.length; j++) {
+        runtime.updateNodeData(order[j], { runStatus: "", _cascadeIdx: "" });
+      }
+      throw err;
+    }
+  }
+}
+
+/** 执行级联（支持 serial / parallel loop 模式） */
 export async function runNodeCascade(targetId: string, runtime: CascadeRuntime): Promise<void> {
   const nodes = runtime.getNodes();
   const edges = runtime.getEdges();
@@ -167,43 +232,61 @@ export async function runNodeCascade(targetId: string, runtime: CascadeRuntime):
     runtime.updateNodeData(id, { generatedOutputs: [] });
   }
 
-  for (let round = 1; round <= totalRounds; round++) {
-    const loopIndex = startIdx + (round - 1) * batchSize;
-    const loopCtx = loop
-      ? { index: loopIndex, total: endIdx, nodeId: loop.node.id }
-      : undefined;
-
-    for (let i = 0; i < order.length; i++) {
-      const id = order[i];
-      const idxLabel = `${i + 1}/${order.length}${totalRounds > 1 ? ` · ${loopIndex}/${endIdx}` : ""}`;
-
+  if (loop?.mode === "parallel" && totalRounds > 1) {
+    for (const id of order) {
       runtime.updateNodeData(id, {
         runStatus: "queued",
         runError: "",
-        _cascadeIdx: idxLabel,
+        _cascadeFailed: false,
+        _cascadeIdx: `0/${totalRounds}`,
       });
+    }
 
-      runtime.updateNodeData(id, { runStatus: "running", _cascadeIdx: idxLabel });
+    const rounds = Array.from({ length: totalRounds }, (_, idx) => ({
+      idx,
+      index: startIdx + idx * batchSize,
+    }));
+    const limit = cascadeParallelLimit(order, nodes, totalRounds);
+    let done = 0;
 
-      try {
-        const node = runtime.getNodes().find((n) => n.id === id);
-        if (!node) continue;
-        await runNodeByType(node, { ...runtime, loopCtx, cascadeTargetId: targetId });
-        runtime.updateNodeData(id, { runStatus: "done", running: false, _cascadeIdx: idxLabel });
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        const roundPrefix = totalRounds > 1 ? `第 ${round}/${totalRounds} 轮: ` : "";
-        runtime.updateNodeData(id, {
-          runStatus: "failed",
-          runError: `${roundPrefix}${msg}`,
-          running: false,
-          _cascadeFailed: true,
-        });
-        for (let j = i + 1; j < order.length; j++) {
-          runtime.updateNodeData(order[j], { runStatus: "", _cascadeIdx: "" });
-        }
-        throw err;
+    const results = await runLimitedCascadeRounds(rounds, limit, async ({ index }) => {
+      const loopCtx = { index, total: endIdx, nodeId: loop.node.id };
+      await runCascadeRound(
+        order,
+        targetId,
+        runtime,
+        loopCtx,
+        `第 ${index}/${endIdx} 轮`,
+        totalRounds,
+        index,
+        endIdx,
+      );
+      done += 1;
+      for (const id of order) {
+        runtime.updateNodeData(id, { _cascadeIdx: `${done}/${totalRounds}` });
       }
+    });
+
+    const failed = results.find((r) => r.status === "rejected");
+    if (failed) {
+      throw failed.reason instanceof Error ? failed.reason : new Error("parallel loop failed");
+    }
+  } else {
+    for (let round = 1; round <= totalRounds; round++) {
+      const loopIndex = startIdx + (round - 1) * batchSize;
+      const loopCtx = loop
+        ? { index: loopIndex, total: endIdx, nodeId: loop.node.id }
+        : undefined;
+      await runCascadeRound(
+        order,
+        targetId,
+        runtime,
+        loopCtx,
+        `第 ${round}/${totalRounds} 轮`,
+        totalRounds,
+        loopIndex,
+        endIdx,
+      );
     }
   }
 

@@ -3,7 +3,9 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCanvasEditorActions } from "../EditorActionsContext";
+import { GeneratorInputList } from "../GeneratorInputList";
 import { NodeRunActions } from "../NodeRunActions";
+import { orderedSources, reorderInput } from "../../lib/graph";
 import { runGeneratorNode, type RunNodeRuntime } from "../../lib/runNode";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { GeneratorNodeData } from "@infinite-canvas/canvas-schema";
@@ -19,7 +21,12 @@ export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorN
   const runStatus = String(data.runStatus ?? "");
   const runError = String(data.runError ?? "");
   const cascadeIdx = String(data._cascadeIdx ?? "");
+  const inputs = Array.isArray(data.inputs) ? (data.inputs as string[]) : [];
 
+  const sources = useMemo(
+    () => orderedSources(id, data as Record<string, unknown>, nodes, edges),
+    [id, data, nodes, edges],
+  );
   const runContext = useMemo(() => getRunContext(id), [getRunContext, id, nodes, edges]);
   const promptPreview = runContext.prompt;
 
@@ -39,6 +46,14 @@ export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorN
   const nodeRef = useMemo(
     () => ({ id, data, type: "generator" as const, position: { x: 0, y: 0 } }),
     [id, data],
+  );
+
+  const handleReorder = useCallback(
+    (movedId: string, targetId: string) => {
+      const next = reorderInput(id, data as Record<string, unknown>, nodes, edges, movedId, targetId);
+      if (next) updateNodeData(id, { inputs: next });
+    },
+    [id, data, nodes, edges, updateNodeData],
   );
 
   const handleRun = useCallback(async () => {
@@ -72,6 +87,12 @@ export function GeneratorNode({ id, data, selected }: CanvasNodeProps<GeneratorN
             {promptPreview}
           </p>
         ) : null}
+        <GeneratorInputList
+          nodeId={id}
+          sources={sources}
+          inputs={inputs}
+          onReorder={handleReorder}
+        />
         <div>
           <Label className="text-xs text-muted-foreground">平台</Label>
           <Input value={provider} readOnly className="h-7 text-xs" />

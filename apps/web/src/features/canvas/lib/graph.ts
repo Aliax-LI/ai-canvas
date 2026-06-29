@@ -541,3 +541,29 @@ export function needPromptOrImage(prompt: string, refs: MediaRef[]): boolean {
 export function defaultRunPrompt(prompt: string): string {
   return prompt.trim() || "Edit the reference images.";
 }
+
+/** 对齐上游 reorderInput — 拖拽排序生成器图片输入 */
+export function reorderInput(
+  genId: string,
+  genData: Record<string, unknown>,
+  nodes: Node[],
+  edges: Edge[],
+  movedId: string,
+  targetId: string,
+): string[] | null {
+  if (!movedId || movedId === targetId) return null;
+  const sources = generatorSources(genId, nodes, edges);
+  const imageIds = sources.filter((s) => s.refs?.length).map((s) => s.id);
+  if (!imageIds.includes(movedId) || !imageIds.includes(targetId)) return null;
+  const promptIds = (Array.isArray(genData.inputs) ? (genData.inputs as string[]) : []).filter(
+    (id) => !imageIds.includes(id),
+  );
+  const ids = (Array.isArray(genData.inputs) ? (genData.inputs as string[]) : []).filter((id) =>
+    imageIds.includes(id),
+  );
+  const from = ids.indexOf(movedId);
+  const to = ids.indexOf(targetId);
+  if (from < 0 || to < 0) return null;
+  ids.splice(to, 0, ids.splice(from, 1)[0]);
+  return [...ids, ...promptIds];
+}

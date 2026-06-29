@@ -263,4 +263,54 @@ test.describe("M9 canvas editor", () => {
     await page.keyboard.press("ControlOrMeta+z");
     await expect(page.locator("[data-testid^='canvas-node-']")).toHaveCount(beforeCount);
   });
+
+  test("Batch 5：工作流导出与任务恢复", async ({ page }) => {
+    await page.route("**/api/canvases/canvas-4", async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            canvas: {
+              ...MOCK_CANVAS,
+              id: "canvas-4",
+              title: "Batch5 测试",
+              nodes: [
+                ...MOCK_CANVAS.nodes,
+                {
+                  id: "ltx_test",
+                  type: "ltxDirector",
+                  x: 200,
+                  y: 400,
+                  globalPrompt: "测试 LTX",
+                  durationSeconds: 5,
+                  frameRate: 24,
+                  durationFrames: 120,
+                  ltxTimelineData: "",
+                  ltxSegments: [],
+                  inputs: [],
+                },
+              ],
+            },
+          }),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.goto("/canvas/canvas-4");
+    await expect(page.getByTestId("canvas-workflow-export")).toBeVisible();
+    await expect(page.getByTestId("canvas-workflow-import")).toBeVisible();
+    await expect(page.getByTestId("canvas-task-recovery")).toBeVisible();
+    await expect(page.getByTestId("canvas-ltx-timeline-ltx_test")).toBeVisible();
+
+    await page.getByTestId("canvas-task-recovery").click();
+    await expect(page.getByRole("heading", { name: "任务恢复" })).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    await page.getByTestId("canvas-create-fab").click();
+    await page.getByTestId("canvas-create-ltxDirector").click();
+    await expect(page.locator("[data-testid^='canvas-ltx-timeline-']")).toHaveCount(2);
+  });
 });

@@ -284,3 +284,45 @@ export async function pollRunningHubTask(
 ): Promise<{ success?: boolean; data?: { status?: string; urls?: string[] } }> {
   return api.get(`/runninghub/query?taskId=${encodeURIComponent(taskId)}`);
 }
+
+export interface RunningHubAppEntry {
+  id?: string;
+  appId?: string;
+  workflowId?: string;
+  title?: string;
+  name?: string;
+  enabled?: boolean;
+  hidden?: boolean;
+}
+
+export interface ApiProviderRecord {
+  id: string;
+  name?: string;
+  rh_apps?: RunningHubAppEntry[];
+  rh_workflows?: RunningHubAppEntry[];
+}
+
+export async function fetchApiProviders(): Promise<ApiProviderRecord[]> {
+  const data = await api.get<{ providers: ApiProviderRecord[] }>("/providers");
+  return data.providers ?? [];
+}
+
+export async function fetchRunningHubAppInfo(
+  webappId: string,
+): Promise<{ data?: { nodeInfoList?: unknown[] } }> {
+  return api.get(`/runninghub/app-info?webappId=${encodeURIComponent(webappId)}`);
+}
+
+export async function uploadUrlToComfy(url: string): Promise<string> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("图片读取失败");
+  const blob = await response.blob();
+  const filename = url.split("/").pop()?.split("?")[0] || `canvas_${Date.now()}.png`;
+  const form = new FormData();
+  form.append("files", blob, filename);
+  const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
+  const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: form });
+  const data = (await res.json()) as { files?: { comfy_name?: string; name?: string }[] };
+  if (!res.ok) throw new Error("图片上传到 ComfyUI 失败");
+  return data.files?.[0]?.comfy_name || filename;
+}

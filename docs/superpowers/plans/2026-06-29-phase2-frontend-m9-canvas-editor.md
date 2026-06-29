@@ -97,19 +97,30 @@
 - 任务恢复队列
 - loop parallel 模式级联
 
-## Batch 5 / M10 缺口（Tauri 与高级 parity）
+## Batch 5（已完成）
+
+| 能力 | 模块 | 说明 |
+|------|------|------|
+| LTX 时间轴 | `LtxTimeline.tsx` + `lib/ltx.ts` | 片段编辑、连线图片同步、`runLtxDirectorNode` |
+| reorderInput | `lib/graph.ts` + `GeneratorInputList.tsx` | 参考图拖拽排序；Generator / Comfy / LTX |
+| 工作流导入导出 | `WorkflowMenu.tsx` | 客户端 JSON 导出；导入合并/替换确认 |
+| loop parallel 级联 | `lib/cascade.ts` | `Promise.all` 限并发 2–3 |
+| Comfy enhance/edit | `ComfyNode.tsx` + `runComfyNode` | 全参数 + upscale 链 |
+| RH 应用选择器 | `RhNode.tsx` | `GET /api/providers` → rh_apps / rh_workflows |
+| 任务恢复面板 | `TaskRecoveryPanel.tsx` | running/failed 节点 + 清除状态 |
+| E2E | `m9-canvas-editor.spec.ts` | export / task recovery / LTX timeline |
+
+## Batch 5 defer / M10 缺口
 
 | 项 | 说明 |
 |----|------|
 | **M10 Tauri 2 桌面** | sidecar 生命周期、托盘、Win/macOS 安装包 |
-| 上游连线拖拽排序 | `reorderInput` |
-| 工作流导入/导出 | workflow JSON |
-| 节点运行队列 / 任务恢复 | 上游 queue |
-| LTX Director 完整运行 | 时间轴 + text 段 |
-| Comfy enhance/edit 全参数 UI | 上游完整表单 |
-| RunningHub rhAppInfo 选择器 | 上游应用列表 |
 | WebSocket 多人协作 | `/ws` |
-| 图片编辑器 / 插件联动 | PS/Chrome |
+| 图片编辑器 / PS·Chrome 插件 | 上游 image editor |
+| 端口类型校验、临时连线预览 | 上游 connection validation |
+| 工作流 ZIP + 资产库导出 | 服务端 `/api/canvas-workflows/*` |
+| LTX 完整 CanvasLTXTimelineEditor | 上游可视化时间轴编辑器 |
+| 节点运行队列 / 后端任务恢复 | 上游 queue + WS |
 
 ## Batch 4 缺口（已关闭 — 见上表已完成项）
 

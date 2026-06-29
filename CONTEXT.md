@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M9 — 无限画布 Batch 4 完成`（级联 + 撤销 + 资产库侧栏；Tauri → M10）
+**当前阶段**：`M9 — 无限画布 Batch 5 完成`（LTX 时间轴 + 工作流 + parallel loop；Tauri → M10）
 
 **当前里程碑进度**：
 
@@ -32,7 +32,7 @@
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
-| M9 无限画布 | 🟡 Batch 4 完成 | 级联运行 + 撤销栈 + 资产库侧栏 |
+| M9 无限画布 | 🟡 Batch 5 完成 | LTX 时间轴 + 工作流 + reorderInput + parallel loop |
 | M10 Tauri 2 桌面 | ⚪ 待做 | sidecar、托盘、Win/macOS 打包 |
 
 ---
@@ -52,7 +52,7 @@
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
-| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 + Batch 4 级联/撤销/资产库 |
+| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 + Batch 5 LTX/工作流/parallel |
 | smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
@@ -74,6 +74,51 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M9 前端：无限画布 Batch 5 高级 parity
+
+**变更摘要**
+
+- **`lib/ltx.ts`**：`ltxSyncConnectedImagesToTimeline` / `ltxDirectorBuildTimelinePayload` / 片段 CRUD 辅助
+- **`LtxTimeline.tsx` + `LtxDirectorNode.tsx`**：时间轴 UI、globalPrompt/duration/frameRate 可编辑、`runLtxDirectorNode` 调 Comfy LTX 工作流
+- **`lib/graph.ts`**：`reorderInput`；**`GeneratorInputList.tsx`** 拖拽排序参考图
+- **`WorkflowMenu.tsx`**：工作流 JSON 导出/导入（合并或替换确认）
+- **`lib/cascade.ts`**：loop `parallel` 模式，限并发 2–3
+- **`ComfyNode`**：enhance/edit/text 全参数；**`runComfyNode`** 完整 payload + upscale 链
+- **`RhNode`**：`GET /api/providers` 应用/工作流选择器；rhPayment
+- **`TaskRecoveryPanel.tsx`**：running/failed 任务展示 + 清除状态
+- E2E：workflow export、task recovery、LTX timeline
+
+**影响路径**
+
+- `apps/web/src/features/canvas/lib/ltx.ts`
+- `apps/web/src/features/canvas/lib/graph.ts`
+- `apps/web/src/features/canvas/lib/cascade.ts`
+- `apps/web/src/features/canvas/lib/runNode.ts`
+- `apps/web/src/features/canvas/components/LtxTimeline.tsx`
+- `apps/web/src/features/canvas/components/GeneratorInputList.tsx`
+- `apps/web/src/features/canvas/components/WorkflowMenu.tsx`
+- `apps/web/src/features/canvas/components/TaskRecoveryPanel.tsx`
+- `apps/web/src/features/canvas/components/nodes/*`
+- `apps/web/src/features/canvas/CanvasEditorPage.tsx`
+- `tests/e2e/m9-canvas-editor.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m9-canvas-editor.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **13 passed**
+
+**下一步**
+
+- M10 Tauri 2 桌面打包
+- defer：WebSocket 协作、图片编辑器、端口校验、LTX 可视化编辑器
+
+**方向对齐**
+
+- Batch 5 高级 parity 完成；Tauri 独立 M10；协作/插件 defer 文档记录
 
 ---
 

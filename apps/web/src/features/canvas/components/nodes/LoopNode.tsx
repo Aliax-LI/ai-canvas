@@ -13,7 +13,7 @@ import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { LoopNodeData } from "@infinite-canvas/canvas-schema";
 
 export function LoopNode({ id, data, selected }: CanvasNodeProps<LoopNodeData>) {
-  const { nodes, edges, runCascade, cascadeRunning } = useCanvasEditorActions();
+  const { nodes, edges, runCascade, cascadeRunning, updateNodeData } = useCanvasEditorActions();
   const count = Number(data.count ?? 3);
   const mode = String(data.mode ?? "serial");
   const runError = String(data.runError ?? "");
@@ -56,7 +56,15 @@ export function LoopNode({ id, data, selected }: CanvasNodeProps<LoopNodeData>) 
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">模式</Label>
-            <Input value={mode} readOnly className="h-7 text-xs" />
+            <select
+              className="flex h-7 w-full rounded-md border border-input bg-background px-2 text-xs"
+              value={mode}
+              onChange={(e) => updateNodeData(id, { mode: e.target.value })}
+              data-testid={`canvas-loop-mode-${id}`}
+            >
+              <option value="serial">串行</option>
+              <option value="parallel">并行</option>
+            </select>
           </div>
         </div>
         {loopTargetId ? (

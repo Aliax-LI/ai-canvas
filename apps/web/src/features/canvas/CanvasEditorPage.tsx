@@ -18,6 +18,8 @@ import { CanvasFlow } from "./components/CanvasFlow";
 import { CreateFab, CreateMenu } from "./components/CreateMenu";
 import { CanvasEditorActionsProvider } from "./components/EditorActionsContext";
 import { LogsPanel } from "./components/LogsPanel";
+import { TaskRecoveryPanel } from "./components/TaskRecoveryPanel";
+import { WorkflowMenu } from "./components/WorkflowMenu";
 import { useCanvasShell } from "./context";
 import { runNodeCascade, resolveCascadeTargetId } from "./lib/cascade";
 import {
@@ -438,6 +440,37 @@ export function CanvasEditorPage() {
     void runCascade(target.id);
   }, [runCascade]);
 
+  const handleWorkflowImport = useCallback(
+    (importedNodes: Node[], importedEdges: Edge[], mode: "merge" | "replace") => {
+      pushUndo();
+      if (mode === "replace") {
+        setNodes(importedNodes);
+        setEdges(importedEdges);
+      } else {
+        setNodes((prev) => [...prev.map((n) => ({ ...n, selected: false })), ...importedNodes]);
+        setEdges((prev) => [...prev, ...importedEdges]);
+      }
+      scheduleSave();
+    },
+    [pushUndo, scheduleSave],
+  );
+
+  const clearTaskStatus = useCallback(
+    (nodeIds: string[]) => {
+      for (const nodeId of nodeIds) {
+        updateNodeData(nodeId, {
+          running: false,
+          runStatus: "",
+          runError: "",
+          _cascadeIdx: "",
+          _cascadeFailed: false,
+        });
+      }
+      toast.success("已清除任务状态");
+    },
+    [updateNodeData],
+  );
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (isEditableTarget(e.target)) return;
@@ -532,6 +565,14 @@ export function CanvasEditorPage() {
       <CanvasEditorActionsProvider value={editorActions}>
         <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border bg-card/60 px-3">
           <AssetsToggle open={assetsOpen} onToggle={() => setAssetsOpen((v) => !v)} />
+          <WorkflowMenu
+            title={title}
+            nodes={nodes}
+            edges={edges}
+            viewport={viewport}
+            onImport={handleWorkflowImport}
+          />
+          <TaskRecoveryPanel nodes={nodes} logs={logs} onClearStatus={clearTaskStatus} />
           <Button
             type="button"
             variant="outline"
