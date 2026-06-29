@@ -32,7 +32,7 @@ apps/desktop/src-tauri/gen/
 # 用户运行时数据（开发机本地）
 .infinite-canvas/
 data/
-assets/
+/assets/
 output/
 API/.env
 
