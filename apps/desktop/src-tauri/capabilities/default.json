@@ -3,5 +3,18 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:default", "shell:default"]
+  "permissions": [
+    "core:default",
+    "shell:allow-kill",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "infinite-canvas",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    }
+  ]
 }

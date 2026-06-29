@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M10 — Tauri 2 桌面端 Batch 1 完成`（壳 + dev sidecar 生命周期；Batch 2 → PyInstaller 打包）
+**当前阶段**：`M10 — Tauri 2 桌面端 Batch 2 完成`（PyInstaller sidecar + release 打包链路 + 透明底应用图标；Batch 3 → 签名/单实例）
 
 **当前里程碑进度**：
 
@@ -33,7 +33,7 @@
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
 | M9 无限画布 | 🟡 Batch 5 完成 | LTX 时间轴 + 工作流 + reorderInput + parallel loop |
-| M10 Tauri 2 桌面 | 🟡 Batch 1 完成 | Tauri 2 壳、dev sidecar、托盘、API base 注入 |
+| M10 Tauri 2 桌面 | 🟡 Batch 2 完成 | PyInstaller sidecar、release `tauri build` 链路、自定义图标 |
 
 ---
 
@@ -76,6 +76,83 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
 
 ---
+
+### 2026-06-29 — M10 Batch 2：PyInstaller sidecar + 桌面应用图标
+
+**变更摘要**
+
+- **PyInstaller sidecar**：完善 `scripts/build-sidecar.sh/.ps1`，入口 `infinite_canvas.main:main`；产出 `binaries/infinite-canvas-{target-triple}`（~24MB onefile）；`pyproject.toml` dev 依赖 `pyinstaller`
+- **release sidecar**：`sidecar.rs` debug 仍 `uv run`；release 用 `tauri_plugin_shell::Sidecar` spawn；`SidecarProcess` enum 统一 kill
+- **构建流水线**：`beforeBuildCommand` → web build + sidecar build；根 `desktop:build`；`capabilities/default.json` shell spawn 权限
+- **桌面图标**：用户 ∞+网格图替换 Tauri 默认图标；白边抠透明后 `pnpm tauri icon` 重生 `icon.icns`/`icon.ico`/Square* 全套；源图 `icon-source.png`
+
+**影响路径**
+
+- `apps/desktop/src-tauri/src/sidecar.rs`、`tauri.conf.json`、`capabilities/default.json`
+- `apps/desktop/src-tauri/binaries/infinite-canvas-*`
+- `apps/desktop/src-tauri/icon-source.png`、`icons/**`
+- `scripts/build-sidecar.sh`、`scripts/build-sidecar.ps1`、`scripts/sidecar_entry.py`
+- `pyproject.toml`、`uv.lock`、`package.json`（`desktop:build`）
+- `docs/superpowers/plans/2026-06-29-m10-tauri-desktop.md`
+
+**验证项**
+
+- [x] `./scripts/build-sidecar.sh` 产出 aarch64 sidecar 二进制
+- [x] `pnpm --filter web build`
+- [x] `cargo check --release`（apps/desktop/src-tauri）
+- [x] 图标 PNG 四角 alpha=0（透明底）
+- [ ] `pnpm desktop:build` 全链路安装包（需本机 GUI + 签名可选）
+- [ ] `pnpm desktop:dev` release 模式 sidecar 手动验证
+
+**下一步**
+
+- M10 Batch 3：macOS codesign + notarization、Windows Authenticode、单实例锁
+- defer：deep-link、自动更新、Playwright 驱动 Tauri GUI
+
+**方向对齐**
+
+- 设计规格 §7.2 Sidecar 打包 + §7.1 release 分支脱离 dev 依赖 uv
+- 图标符合 DESIGN.md「桌面原生感」；业务仍 Python/React，Rust 仅壳
+
+---
+
+### 2026-06-29 — M10 Batch 2：PyInstaller sidecar 与 prod 打包链路
+
+**变更摘要**
+
+- **`scripts/build-sidecar.sh/.ps1`**：PyInstaller onefile，入口 `infinite_canvas.main:main`（`scripts/sidecar_entry.py` shim）；产出 `binaries/infinite-canvas-{target-triple}`
+- **`sidecar.rs`**：debug → `uv run infinite-canvas`；release → `app.shell().sidecar("infinite-canvas")`；`SidecarProcess` enum 统一 kill；stdout/stderr 日志
+- **构建流水线**：`beforeBuildCommand` = web build + sidecar；`pnpm desktop:build` / `desktop build:sidecar`
+- **`capabilities/default.json`**：`shell:allow-spawn` sidecar 权限
+- **`pyproject.toml`**：dev 组增加 `pyinstaller>=6.0`
+- **文档**：`docs/superpowers/plans/2026-06-29-m10-tauri-desktop.md` Batch 2 + 签名模板
+
+**影响路径**
+
+- `scripts/build-sidecar.sh`、`scripts/build-sidecar.ps1`、`scripts/sidecar_entry.py`
+- `apps/desktop/src-tauri/src/sidecar.rs`、`capabilities/default.json`、`tauri.conf.json`
+- `apps/desktop/package.json`、`package.json`
+- `pyproject.toml`、`uv.lock`
+- `apps/desktop/src-tauri/binaries/infinite-canvas-aarch64-apple-darwin`（24MB 真实二进制，替换 stub）
+- `docs/superpowers/plans/2026-06-29-m10-tauri-desktop.md`
+
+**验证项**
+
+- [x] `./scripts/build-sidecar.sh` → 24MB aarch64 二进制
+- [x] release sidecar 手动启动 → `GET /api/app-info` 200（冷启动 ~27s）
+- [x] `pnpm --filter web build`
+- [x] `cargo check --release`（src-tauri）
+- [x] `pnpm desktop:build` → `.app` + `.dmg`
+
+**下一步**
+
+- M10 Batch 3：codesign/notarization CI、Windows sidecar、单实例锁、自动更新
+- defer：x86_64-apple-darwin sidecar 须在 Intel Mac 构建；实际签名密钥
+
+**方向对齐**
+
+- 设计规格 §7.1 prod 使用 bundled sidecar，dev 仍用 uv
+- strict parity 不变；仅打包与启动路径分化
 
 ---
 

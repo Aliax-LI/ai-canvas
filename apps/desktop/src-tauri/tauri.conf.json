@@ -6,7 +6,7 @@
   "build": {
     "beforeDevCommand": "pnpm --filter web dev",
     "devUrl": "http://127.0.0.1:5173",
-    "beforeBuildCommand": "pnpm --filter web build",
+    "beforeBuildCommand": "pnpm --filter web build && bash ../../scripts/build-sidecar.sh",
     "frontendDist": "../../web/dist"
   },
   "app": {

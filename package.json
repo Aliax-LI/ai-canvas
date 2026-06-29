@@ -7,7 +7,8 @@
     "build": "pnpm -r build",
     "lint": "pnpm --filter web lint",
     "test:e2e": "pnpm --filter e2e test",
-    "desktop:dev": "pnpm --filter desktop dev"
+    "desktop:dev": "pnpm --filter desktop dev",
+    "desktop:build": "pnpm --filter desktop build"
   },
   "engines": {
     "node": ">=20",
