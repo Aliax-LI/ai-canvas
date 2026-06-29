@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M4 — 前端 React 脚手架启动`（pnpm monorepo + Design System；后端 **126** paths / pytest **106 passed** 已闭环）
+**当前阶段**：`M5 — 前端设置页迁移进行中`（API / ComfyUI 设置核心 CRUD 已接入；后端 **126** paths / pytest **106 passed**）
 
 **当前里程碑进度**：
 
@@ -27,7 +27,8 @@
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
 | M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths；Avatar/多平台生图/Canvas 视频全分支 parity |
-| M4–M7 前端 React | 🟡 进行中 | monorepo + `apps/web` Design System 脚手架；14 页 + 双画布待迁移 |
+| M4 前端 Shell | ✅ 完成 | pnpm monorepo、Design System、14 路由占位、E2E app-shell |
+| M5–M7 前端业务页 | 🟡 进行中 | **M5** API/ComfyUI 设置核心页已迁移；素材/列表/chat/tools/双画布待做 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
 ---
@@ -50,8 +51,8 @@
 | canvas.html | `/canvas/:id` | 🟡 Shell + 占位 |
 | smart-canvas.html | `/smart/:id` | 🟡 路由占位 |
 | asset-manager.html | `/assets` | 🟡 路由占位 |
-| api-settings.html | `/settings/api` | 🟡 路由占位 |
-| comfyui-settings.html | `/settings/comfyui` | 🟡 路由占位 |
+| api-settings.html | `/settings/api` | 🟡 核心 CRUD |
+| comfyui-settings.html | `/settings/comfyui` | 🟡 实例+工作流配置 |
 | gpt-chat.html | `/chat` | 🟡 路由占位 |
 | zimage / enhance / klein / online / angle | `/tools/*` | 🟡 路由占位 |
 
@@ -69,6 +70,40 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M5 前端：API 设置与 ComfyUI 工作流设置
+
+**变更摘要**
+
+- **`/settings/api`**：平台列表、新增/删除、基本信息与协议、Key（标准/RH 双 Key/火山 AK-SK）、模型列表编辑、测试连接、拉取上游模型；TanStack Query + `SaveProviderPayload` 对接 `PUT /api/providers`
+- **`/settings/comfyui`**：ComfyUI 实例 CRUD、工作流列表、JSON 上传、暴露字段配置保存/删除；对接 `/api/comfyui/instances`、`/api/workflows/*`
+- 共享 `SettingsPageLayout`、shadcn Label/Textarea；`AppProviders` 接入 QueryClient
+- Playwright：`tests/e2e/settings-pages.spec.ts`（mock API happy path）
+
+**影响路径**
+
+- `apps/web/src/features/settings/**`
+- `apps/web/src/app/AppProviders.tsx`
+- `apps/web/src/components/ui/label.tsx`、`textarea.tsx`
+- `tests/e2e/settings-pages.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m5-settings.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e`（3 passed：app-shell + settings-pages）
+- [ ] 联调：`uv run infinite-canvas --port 3000` + `pnpm dev` → 保存 providers / workflow config
+
+**下一步**
+
+- M5 补全：推荐 API、RH 工作流编辑器、ComfyUI 节点图预览与运行测试
+- M6：素材库 + 画布列表 + GPT 对话
+
+**方向对齐**
+
+- strict parity 按页推进；设置页核心数据流已通；legacy 高级 UI（图编辑器）分后续小批补全
 
 ---
 
