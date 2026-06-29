@@ -1,80 +1,54 @@
-import { useCallback, useState } from "react";
-import { Loader2, Play } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitRunningHub, submitRunningHubWorkflow } from "../../api";
+import { Textarea } from "@/components/ui/textarea";
 import { useCanvasEditorActions } from "../EditorActionsContext";
-import { defaultRunPrompt, findDownstreamOutput, needPromptOrImage } from "../../lib/graph";
-import { waitForRhTask } from "../../lib/nodeRun";
-import { mergeGeneratedOutputs } from "../../lib/runHelpers";
+import { NodeRunActions } from "../NodeRunActions";
+import { runRhNode, type RunNodeRuntime } from "../../lib/runNode";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { RhNodeData } from "@infinite-canvas/canvas-schema";
 
 export function RhNode({ id, data, selected }: CanvasNodeProps<RhNodeData>) {
-  const { nodes, edges, updateNodeData, getRunContext, appendLog, writeOutputImages } =
-    useCanvasEditorActions();
+  const { nodes, edges, updateNodeData, appendLog, writeOutputImages } = useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const rhMode = String(data.rhMode ?? "app");
   const webappId = String(data.webappId ?? "");
   const workflowId = String(data.workflowId ?? "");
   const runError = String(data.runError ?? "");
-  const generatedOutputs = (data as { generatedOutputs?: unknown[] }).generatedOutputs;
+  const cascadeIdx = String(data._cascadeIdx ?? "");
+  const rhParams = (data.rhParams ?? {}) as Record<string, unknown>;
+  const rhParamsJson = useMemo(() => JSON.stringify(rhParams, null, 2), [rhParams]);
+
+  const runtime = useMemo<RunNodeRuntime>(
+    () => ({
+      nodes,
+      edges,
+      getNodes: () => nodes,
+      getEdges: () => edges,
+      updateNodeData,
+      appendLog,
+      writeOutputImages,
+    }),
+    [nodes, edges, updateNodeData, appendLog, writeOutputImages],
+  );
+
+  const nodeRef = useMemo(
+    () => ({ id, data, type: "rh" as const, position: { x: 0, y: 0 } }),
+    [id, data],
+  );
 
   const handleRun = useCallback(async () => {
-    const { prompt, referenceImages } = getRunContext(id);
-    if (!needPromptOrImage(prompt, referenceImages)) {
-      toast.error("请连接提示词或参考图");
-      return;
-    }
-
     setRunning(true);
-    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
-    appendLog({ nodeId: id, nodeType: "rh", status: "running" });
-
     try {
-      const effectivePrompt = defaultRunPrompt(prompt);
-      const nodeInfoList = [
-        { prompt: effectivePrompt, images: referenceImages.map((r) => r.url) },
-      ];
-      const submit =
-        rhMode === "workflow"
-          ? await submitRunningHubWorkflow({ workflowId, nodeInfoList })
-          : await submitRunningHub({ webappId, nodeInfoList });
-      if (!submit.taskId) throw new Error("未返回 taskId");
-      const result = await waitForRhTask(submit.taskId);
-      const urls = result.urls ?? [];
-      if (urls.length) {
-        const outputs = mergeGeneratedOutputs(generatedOutputs, urls);
-        updateNodeData(id, { generatedOutputs: outputs });
-        const outNode = findDownstreamOutput(id, nodes, edges);
-        if (outNode) writeOutputImages(outNode.id, urls);
-      }
-      updateNodeData(id, { running: false, runStatus: "succeeded" });
-      appendLog({ nodeId: id, nodeType: "rh", status: "succeeded", message: "RunningHub 完成" });
+      await runRhNode(nodeRef, runtime);
       toast.success("RunningHub 任务完成");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "RunningHub 运行失败";
-      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
-      appendLog({ nodeId: id, nodeType: "rh", status: "failed", message: msg });
-      toast.error(msg);
+      toast.error(e instanceof Error ? e.message : "RunningHub 运行失败");
     } finally {
       setRunning(false);
     }
-  }, [
-    id,
-    getRunContext,
-    rhMode,
-    webappId,
-    workflowId,
-    generatedOutputs,
-    nodes,
-    edges,
-    updateNodeData,
-    appendLog,
-    writeOutputImages,
-  ]);
+  }, [nodeRef, runtime]);
 
   return (
     <BaseNodeShell
@@ -95,23 +69,39 @@ export function RhNode({ id, data, selected }: CanvasNodeProps<RhNodeData>) {
           </Label>
           <Input
             value={rhMode === "workflow" ? workflowId : webappId}
-            readOnly
+            onChange={(e) =>
+              updateNodeData(
+                id,
+                rhMode === "workflow" ? { workflowId: e.target.value } : { webappId: e.target.value },
+              )
+            }
             placeholder="未配置"
             className="h-7 text-xs"
           />
         </div>
+        <div>
+          <Label className="text-xs text-muted-foreground">rhParams (JSON)</Label>
+          <Textarea
+            value={rhParamsJson}
+            onChange={(e) => {
+              try {
+                const parsed = JSON.parse(e.target.value || "{}") as Record<string, unknown>;
+                updateNodeData(id, { rhParams: parsed });
+              } catch {
+                /* 编辑中允许无效 JSON */
+              }
+            }}
+            className="min-h-[72px] font-mono text-[10px]"
+          />
+        </div>
+        {cascadeIdx ? <p className="text-xs text-muted-foreground">级联 {cascadeIdx}</p> : null}
         {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
-        <Button
-          type="button"
-          size="sm"
-          className="w-full"
-          disabled={running}
-          data-testid={`canvas-rh-run-${id}`}
-          onClick={() => void handleRun()}
-        >
-          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
-          运行
-        </Button>
+        <NodeRunActions
+          nodeId={id}
+          running={running}
+          onRun={handleRun}
+          runTestId={`canvas-rh-run-${id}`}
+        />
       </div>
     </BaseNodeShell>
   );

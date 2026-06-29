@@ -1,62 +1,51 @@
-import { useCallback, useState } from "react";
-import { Loader2, Play } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { GitBranch, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCanvasEditorActions } from "../EditorActionsContext";
-import { renderLoopPrompt } from "../../lib/graph";
+import {
+  computeCascadeOrder,
+  findLoopCascadeTarget,
+} from "../../lib/cascade";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { LoopNodeData } from "@infinite-canvas/canvas-schema";
 
 export function LoopNode({ id, data, selected }: CanvasNodeProps<LoopNodeData>) {
-  const { nodes, edges, updateNodeData, appendLog } = useCanvasEditorActions();
-  const [running, setRunning] = useState(Boolean(data.running));
+  const { nodes, edges, runCascade, cascadeRunning } = useCanvasEditorActions();
   const count = Number(data.count ?? 3);
   const mode = String(data.mode ?? "serial");
+  const runError = String(data.runError ?? "");
+  const cascadeIdx = String(data._cascadeIdx ?? "");
 
-  const handleRun = useCallback(async () => {
-    setRunning(true);
-    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
-    appendLog({ nodeId: id, nodeType: "loop", status: "running", message: `循环 ${count} 次` });
+  const loopTargetId = useMemo(
+    () => findLoopCascadeTarget(id, nodes, edges),
+    [id, nodes, edges],
+  );
+  const orderLen = useMemo(
+    () => (loopTargetId ? computeCascadeOrder(loopTargetId, nodes, edges).length : 0),
+    [loopTargetId, nodes, edges],
+  );
 
-    try {
-      const loopNode = nodes.find((n) => n.id === id);
-      if (!loopNode) throw new Error("节点不存在");
-
-      for (let i = 1; i <= count; i++) {
-        const ctx = { index: i, total: count };
-        const prompt = renderLoopPrompt(loopNode, nodes, edges, ctx);
-        appendLog({
-          nodeId: id,
-          nodeType: "loop",
-          status: "running",
-          message: `[${i}/${count}] ${prompt.slice(0, 64) || "(空提示词)"}`,
-        });
-        if (mode === "serial") {
-          await new Promise((r) => setTimeout(r, 120));
-        }
-      }
-
-      updateNodeData(id, { running: false, runStatus: "succeeded" });
-      appendLog({ nodeId: id, nodeType: "loop", status: "succeeded", message: `完成 ${count} 轮` });
-      toast.success(`循环完成 ${count} 轮`);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "循环运行失败";
-      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
-      appendLog({ nodeId: id, nodeType: "loop", status: "failed", message: msg });
-      toast.error(msg);
-    } finally {
-      setRunning(false);
+  const handleCascade = useCallback(async () => {
+    if (!loopTargetId) {
+      toast.error("请连接下游生成器");
+      return;
     }
-  }, [id, count, mode, nodes, edges, updateNodeData, appendLog]);
+    try {
+      await runCascade(loopTargetId);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "级联运行失败");
+    }
+  }, [loopTargetId, runCascade]);
 
   return (
     <BaseNodeShell
       type="loop"
       title="循环"
       selected={selected}
-      running={running}
+      running={cascadeRunning}
       data-testid={`canvas-node-${id}`}
     >
       <div className="space-y-2 nodrag">
@@ -70,16 +59,29 @@ export function LoopNode({ id, data, selected }: CanvasNodeProps<LoopNodeData>) 
             <Input value={mode} readOnly className="h-7 text-xs" />
           </div>
         </div>
+        {loopTargetId ? (
+          <p className="text-xs text-muted-foreground">
+            下游 {orderLen || 1} 个节点 × {count} 轮
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">未连接下游生成器</p>
+        )}
+        {cascadeIdx ? <p className="text-xs text-muted-foreground">级联 {cascadeIdx}</p> : null}
+        {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
         <Button
           type="button"
           size="sm"
           className="w-full"
-          disabled={running}
-          data-testid={`canvas-loop-run-${id}`}
-          onClick={() => void handleRun()}
+          disabled={!loopTargetId || cascadeRunning}
+          data-testid={`canvas-loop-cascade-${id}`}
+          onClick={() => void handleCascade()}
         >
-          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
-          运行
+          {cascadeRunning ? (
+            <Loader2 className="mr-1 size-3 animate-spin" />
+          ) : (
+            <GitBranch className="mr-1 size-3" />
+          )}
+          级联运行
         </Button>
       </div>
     </BaseNodeShell>

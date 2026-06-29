@@ -1,82 +1,55 @@
-import { useCallback, useState } from "react";
-import { Loader2, Play } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createCanvasComfyTask, newCanvasClientId } from "../../api";
+import { Textarea } from "@/components/ui/textarea";
 import { useCanvasEditorActions } from "../EditorActionsContext";
-import { defaultRunPrompt, findDownstreamOutput, needPromptOrImage } from "../../lib/graph";
-import { waitForComfyTask } from "../../lib/nodeRun";
-import { mergeGeneratedOutputs } from "../../lib/runHelpers";
+import { NodeRunActions } from "../NodeRunActions";
+import { runComfyNode, type RunNodeRuntime } from "../../lib/runNode";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { ComfyNodeData } from "@infinite-canvas/canvas-schema";
 
+const COMFY_MODES = ["text", "enhance", "edit", "custom"] as const;
+
 export function ComfyNode({ id, data, selected }: CanvasNodeProps<ComfyNodeData>) {
-  const { nodes, edges, updateNodeData, getRunContext, appendLog, writeOutputImages } =
-    useCanvasEditorActions();
+  const { nodes, edges, updateNodeData, appendLog, writeOutputImages } = useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const mode = String(data.mode ?? "text");
   const width = Number(data.width ?? 1024);
   const height = Number(data.height ?? 1024);
   const workflow = String(data.comfyWorkflow ?? "");
   const runError = String(data.runError ?? "");
-  const generatedOutputs = (data as { generatedOutputs?: unknown[] }).generatedOutputs;
+  const cascadeIdx = String(data._cascadeIdx ?? "");
+
+  const runtime = useMemo<RunNodeRuntime>(
+    () => ({
+      nodes,
+      edges,
+      getNodes: () => nodes,
+      getEdges: () => edges,
+      updateNodeData,
+      appendLog,
+      writeOutputImages,
+    }),
+    [nodes, edges, updateNodeData, appendLog, writeOutputImages],
+  );
+
+  const nodeRef = useMemo(
+    () => ({ id, data, type: "comfy" as const, position: { x: 0, y: 0 } }),
+    [id, data],
+  );
 
   const handleRun = useCallback(async () => {
-    const { prompt, referenceImages } = getRunContext(id);
-    if (!needPromptOrImage(prompt, referenceImages)) {
-      toast.error("请连接提示词或参考图");
-      return;
-    }
-
     setRunning(true);
-    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
-    appendLog({ nodeId: id, nodeType: "comfy", status: "running" });
-
     try {
-      const effectivePrompt = defaultRunPrompt(prompt);
-      const task = await createCanvasComfyTask({
-        prompt: effectivePrompt,
-        width,
-        height,
-        workflow_json: mode === "custom" && workflow ? workflow : "Z-Image.json",
-        type: mode === "text" ? "zimage" : "workflow",
-        client_id: newCanvasClientId(),
-      });
-      const result = await waitForComfyTask(task.task_id);
-      const images = result.images ?? [];
-      if (images.length) {
-        const outputs = mergeGeneratedOutputs(generatedOutputs, images);
-        updateNodeData(id, { generatedOutputs: outputs });
-        const outNode = findDownstreamOutput(id, nodes, edges);
-        if (outNode) writeOutputImages(outNode.id, images);
-      }
-      updateNodeData(id, { running: false, runStatus: "succeeded" });
-      appendLog({ nodeId: id, nodeType: "comfy", status: "succeeded", message: "ComfyUI 完成" });
+      await runComfyNode(nodeRef, runtime);
       toast.success("ComfyUI 生成完成");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "ComfyUI 生成失败";
-      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
-      appendLog({ nodeId: id, nodeType: "comfy", status: "failed", message: msg });
-      toast.error(msg);
+      toast.error(e instanceof Error ? e.message : "ComfyUI 生成失败");
     } finally {
       setRunning(false);
     }
-  }, [
-    id,
-    getRunContext,
-    mode,
-    width,
-    height,
-    workflow,
-    generatedOutputs,
-    nodes,
-    edges,
-    updateNodeData,
-    appendLog,
-    writeOutputImages,
-  ]);
+  }, [nodeRef, runtime]);
 
   return (
     <BaseNodeShell
@@ -89,7 +62,17 @@ export function ComfyNode({ id, data, selected }: CanvasNodeProps<ComfyNodeData>
       <div className="space-y-2 nodrag">
         <div>
           <Label className="text-xs text-muted-foreground">模式</Label>
-          <Input value={mode} readOnly className="h-7 text-xs" />
+          <select
+            className="flex h-7 w-full rounded-md border border-input bg-background px-2 text-xs"
+            value={mode}
+            onChange={(e) => updateNodeData(id, { mode: e.target.value })}
+          >
+            {COMFY_MODES.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -101,24 +84,25 @@ export function ComfyNode({ id, data, selected }: CanvasNodeProps<ComfyNodeData>
             <Input value={String(height)} readOnly className="h-7 text-xs" />
           </div>
         </div>
-        {workflow ? (
+        {mode === "custom" ? (
           <div>
-            <Label className="text-xs text-muted-foreground">工作流</Label>
-            <Input value={workflow} readOnly className="h-7 text-xs" />
+            <Label className="text-xs text-muted-foreground">工作流 JSON</Label>
+            <Textarea
+              value={workflow}
+              onChange={(e) => updateNodeData(id, { comfyWorkflow: e.target.value })}
+              className="min-h-[60px] text-xs font-mono"
+              placeholder="workflow.json 或 JSON"
+            />
           </div>
         ) : null}
+        {cascadeIdx ? <p className="text-xs text-muted-foreground">级联 {cascadeIdx}</p> : null}
         {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
-        <Button
-          type="button"
-          size="sm"
-          className="w-full"
-          disabled={running}
-          data-testid={`canvas-comfy-run-${id}`}
-          onClick={() => void handleRun()}
-        >
-          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
-          运行
-        </Button>
+        <NodeRunActions
+          nodeId={id}
+          running={running}
+          onRun={handleRun}
+          runTestId={`canvas-comfy-run-${id}`}
+        />
       </div>
     </BaseNodeShell>
   );

@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M9 — 无限画布 Batch 3 完成`（运行编排 + 连线输入解析；Tauri 待做）
+**当前阶段**：`M9 — 无限画布 Batch 4 完成`（级联 + 撤销 + 资产库侧栏；Tauri → M10）
 
 **当前里程碑进度**：
 
@@ -32,7 +32,8 @@
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
-| M9 无限画布 + Tauri | 🟡 进行中 | Batch 3：图解析 + 运行编排 + 日志面板；Tauri 待做 |
+| M9 无限画布 | 🟡 Batch 4 完成 | 级联运行 + 撤销栈 + 资产库侧栏 |
+| M10 Tauri 2 桌面 | ⚪ 待做 | sidecar、托盘、Win/macOS 打包 |
 
 ---
 
@@ -51,7 +52,7 @@
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
-| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 + Batch 3 运行编排 |
+| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 + Batch 4 级联/撤销/资产库 |
 | smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
@@ -73,6 +74,47 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M9 前端：无限画布 Batch 4 级联与交互增强
+
+**变更摘要**
+
+- **`lib/runNode.ts`**：统一 `runGeneratorNode` / `runMsGenNode` / `runComfyNode` / `runVideoNode` / `runLlmNode` / `runRhNode`；单节点 Run 与级联共用
+- **`lib/cascade.ts`**：`computeCascadeOrder` / `resolveCascadeLoop` / `runNodeCascade`（serial loop）；失败停止后续节点；写入 `runStatus` / `runError` / `_cascadeIdx`
+- **`lib/history.ts`**：撤销栈 `UNDO_MAX=30`；复制粘贴（新 id + 偏移）
+- **`EditorActionsContext`** 扩展：`runCascade` / `undo` / `redo` / `copySelected` / `paste`；快捷键 Ctrl+Z/Ctrl+Shift+Z/Ctrl+C/Ctrl+V
+- **级联 UI**：`NodeRunActions` 级联按钮；顶栏「运行选中链」；Output / Loop 级联入口
+- **`LoopNode`**：`loopContext { index, total, nodeId }`；触发下游 `runCascade`
+- **`PromptGroupNode`**：聚合 prompt 预览 + 下游级联
+- **`ComfyNode` / `RhNode`**：mode select；rhParams JSON textarea
+- **`AssetsSidebar.tsx`**：`GET /api/asset-library`；点击创建 image 节点
+- E2E：prompt→generator→output 链 + cascade 按钮 + assets toggle + undo
+
+**影响路径**
+
+- `apps/web/src/features/canvas/lib/runNode.ts`
+- `apps/web/src/features/canvas/lib/cascade.ts`
+- `apps/web/src/features/canvas/lib/history.ts`
+- `apps/web/src/features/canvas/CanvasEditorPage.tsx`
+- `apps/web/src/features/canvas/components/**`
+- `tests/e2e/m9-canvas-editor.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m9-canvas-editor.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **12 passed**
+
+**下一步**
+
+- M10 Tauri 2 桌面打包（sidecar 生命周期、托盘、安装包）
+- M9 Batch 5：LTX 时间轴、工作流导入导出、reorderInput、协作 WS
+
+**方向对齐**
+
+- 级联运行已对齐上游拓扑排序与 serial loop；Tauri 独立 M10 里程碑
 
 ---
 

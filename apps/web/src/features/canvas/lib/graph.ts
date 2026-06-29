@@ -51,6 +51,7 @@ export interface RunPayload {
 export interface LoopContext {
   index: number;
   total: number;
+  nodeId?: string;
 }
 
 function nodeType(node: Node): string {

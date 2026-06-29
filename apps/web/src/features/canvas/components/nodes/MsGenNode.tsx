@@ -1,91 +1,52 @@
-import { useCallback, useState } from "react";
-import { Loader2, Play } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { msGenerate, newCanvasClientId } from "../../api";
 import { useCanvasEditorActions } from "../EditorActionsContext";
-import { defaultRunPrompt, findDownstreamOutput, needPromptOrImage } from "../../lib/graph";
-import { mergeGeneratedOutputs } from "../../lib/runHelpers";
+import { NodeRunActions } from "../NodeRunActions";
+import { runMsGenNode, type RunNodeRuntime } from "../../lib/runNode";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { MsGenNodeData } from "@infinite-canvas/canvas-schema";
 
 export function MsGenNode({ id, data, selected }: CanvasNodeProps<MsGenNodeData>) {
-  const { nodes, edges, updateNodeData, getRunContext, appendLog, writeOutputImages } =
-    useCanvasEditorActions();
+  const { nodes, edges, updateNodeData, appendLog, writeOutputImages } = useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const modelKey = String(data.msgenModel ?? "zimage");
   const customModel = String(data.msCustomModel ?? "");
   const width = Number(data.msWidth ?? 1024);
   const height = Number(data.msHeight ?? 1024);
   const runError = String(data.runError ?? "");
-  const generatedOutputs = (data as { generatedOutputs?: unknown[] }).generatedOutputs;
+  const cascadeIdx = String(data._cascadeIdx ?? "");
+
+  const runtime = useMemo<RunNodeRuntime>(
+    () => ({
+      nodes,
+      edges,
+      getNodes: () => nodes,
+      getEdges: () => edges,
+      updateNodeData,
+      appendLog,
+      writeOutputImages,
+    }),
+    [nodes, edges, updateNodeData, appendLog, writeOutputImages],
+  );
+
+  const nodeRef = useMemo(
+    () => ({ id, data, type: "msgen" as const, position: { x: 0, y: 0 } }),
+    [id, data],
+  );
 
   const handleRun = useCallback(async () => {
-    const { prompt, referenceImages } = getRunContext(id);
-    if (!needPromptOrImage(prompt, referenceImages)) {
-      toast.error("请连接提示词或参考图");
-      return;
-    }
-
     setRunning(true);
-    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
-    appendLog({ nodeId: id, nodeType: "msgen", status: "running" });
-
     try {
-      const effectivePrompt = defaultRunPrompt(prompt);
-      const imageUrls = referenceImages.map((r) => r.url);
-      const payload =
-        modelKey === "zimage"
-          ? {
-              prompt: effectivePrompt,
-              resolution: `${width}x${height}`,
-              image_urls: imageUrls.length ? imageUrls : undefined,
-              client_id: newCanvasClientId(),
-            }
-          : {
-              prompt: effectivePrompt,
-              model: customModel || "Tongyi-MAI/Z-Image-Turbo",
-              width,
-              height,
-              size: `${width}x${height}`,
-              image_urls: imageUrls.length ? imageUrls : undefined,
-              client_id: newCanvasClientId(),
-            };
-      const result = await msGenerate(payload);
-      const urls = result.url ? [result.url] : [];
-      if (urls.length) {
-        const outputs = mergeGeneratedOutputs(generatedOutputs, urls);
-        updateNodeData(id, { generatedOutputs: outputs });
-        const outNode = findDownstreamOutput(id, nodes, edges);
-        if (outNode) writeOutputImages(outNode.id, urls);
-      }
-      updateNodeData(id, { running: false, runStatus: "succeeded" });
-      appendLog({ nodeId: id, nodeType: "msgen", status: "succeeded", message: "ModelScope 完成" });
-      toast.success(urls.length ? "ModelScope 生成完成" : "ModelScope 任务已提交");
+      await runMsGenNode(nodeRef, runtime);
+      toast.success("ModelScope 生成完成");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "ModelScope 生成失败";
-      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
-      appendLog({ nodeId: id, nodeType: "msgen", status: "failed", message: msg });
-      toast.error(msg);
+      toast.error(e instanceof Error ? e.message : "ModelScope 生成失败");
     } finally {
       setRunning(false);
     }
-  }, [
-    id,
-    getRunContext,
-    modelKey,
-    customModel,
-    width,
-    height,
-    generatedOutputs,
-    nodes,
-    edges,
-    updateNodeData,
-    appendLog,
-    writeOutputImages,
-  ]);
+  }, [nodeRef, runtime]);
 
   return (
     <BaseNodeShell
@@ -116,18 +77,14 @@ export function MsGenNode({ id, data, selected }: CanvasNodeProps<MsGenNodeData>
             <Input value={String(height)} readOnly className="h-7 text-xs" />
           </div>
         </div>
+        {cascadeIdx ? <p className="text-xs text-muted-foreground">级联 {cascadeIdx}</p> : null}
         {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
-        <Button
-          type="button"
-          size="sm"
-          className="w-full"
-          disabled={running}
-          data-testid={`canvas-msgen-run-${id}`}
-          onClick={() => void handleRun()}
-        >
-          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
-          运行
-        </Button>
+        <NodeRunActions
+          nodeId={id}
+          running={running}
+          onRun={handleRun}
+          runTestId={`canvas-msgen-run-${id}`}
+        />
       </div>
     </BaseNodeShell>
   );

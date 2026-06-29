@@ -1,59 +1,54 @@
-import { useCallback, useState } from "react";
-import { Loader2, Play } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createCanvasLlm } from "../../api";
 import { useCanvasEditorActions } from "../EditorActionsContext";
+import { NodeRunActions } from "../NodeRunActions";
+import { runLlmNode, type RunNodeRuntime } from "../../lib/runNode";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { LlmNodeData } from "@infinite-canvas/canvas-schema";
 
 export function LlmNode({ id, data, selected }: CanvasNodeProps<LlmNodeData>) {
-  const { nodes, edges, getRunContext, updateNodeData, appendLog } = useCanvasEditorActions();
+  const { nodes, edges, getRunContext, updateNodeData, appendLog, writeOutputImages } =
+    useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const provider = String(data.llmProvider ?? "comfly");
   const model = String(data.model ?? "");
   const outputText = String(data.outputText ?? "");
   const runError = String(data.runError ?? "");
+  const cascadeIdx = String(data._cascadeIdx ?? "");
+
+  const runtime = useMemo<RunNodeRuntime>(
+    () => ({
+      nodes,
+      edges,
+      getNodes: () => nodes,
+      getEdges: () => edges,
+      updateNodeData,
+      appendLog,
+      writeOutputImages,
+    }),
+    [nodes, edges, updateNodeData, appendLog, writeOutputImages],
+  );
+
+  const nodeRef = useMemo(
+    () => ({ id, data, type: "llm" as const, position: { x: 0, y: 0 } }),
+    [id, data],
+  );
 
   const handleRun = useCallback(async () => {
-    const { prompt } = getRunContext(id);
-    const message = prompt.trim() || String(data.chatInput ?? "").trim() || "Rewrite this into an image prompt";
-
     setRunning(true);
-    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
-    appendLog({ nodeId: id, nodeType: "llm", status: "running" });
-
     try {
-      const result = await createCanvasLlm({
-        message,
-        system_prompt: String(data.systemPrompt ?? ""),
-        model,
-        provider,
-      });
-      const text = result.text ?? "";
-      updateNodeData(id, {
-        running: false,
-        runStatus: "succeeded",
-        outputText: text,
-      });
-      appendLog({
-        nodeId: id,
-        nodeType: "llm",
-        status: "succeeded",
-        message: text ? text.slice(0, 48) : "LLM 已响应",
-      });
-      toast.success(text ? "LLM 完成" : "LLM 已响应");
+      await runLlmNode(nodeRef, runtime);
+      toast.success("LLM 完成");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "LLM 运行失败";
-      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
-      appendLog({ nodeId: id, nodeType: "llm", status: "failed", message: msg });
-      toast.error(msg);
+      toast.error(e instanceof Error ? e.message : "LLM 运行失败");
     } finally {
       setRunning(false);
     }
-  }, [id, getRunContext, data.chatInput, data.systemPrompt, model, provider, updateNodeData, appendLog, nodes, edges]);
+  }, [nodeRef, runtime]);
+
+  const promptPreview = useMemo(() => getRunContext(id).prompt, [getRunContext, id, nodes, edges]);
 
   return (
     <BaseNodeShell
@@ -72,21 +67,20 @@ export function LlmNode({ id, data, selected }: CanvasNodeProps<LlmNodeData>) {
           <Label className="text-xs text-muted-foreground">模型</Label>
           <Input value={model} readOnly placeholder="默认模型" className="h-7 text-xs" />
         </div>
+        {promptPreview ? (
+          <p className="line-clamp-2 text-xs text-muted-foreground">{promptPreview}</p>
+        ) : null}
         {outputText ? (
           <p className="line-clamp-3 text-xs text-muted-foreground">{outputText}</p>
         ) : null}
+        {cascadeIdx ? <p className="text-xs text-muted-foreground">级联 {cascadeIdx}</p> : null}
         {runError ? <p className="text-xs text-destructive">{runError}</p> : null}
-        <Button
-          type="button"
-          size="sm"
-          className="w-full"
-          disabled={running}
-          data-testid={`canvas-llm-run-${id}`}
-          onClick={() => void handleRun()}
-        >
-          {running ? <Loader2 className="mr-1 size-3 animate-spin" /> : <Play className="mr-1 size-3" />}
-          运行
-        </Button>
+        <NodeRunActions
+          nodeId={id}
+          running={running}
+          onRun={handleRun}
+          runTestId={`canvas-llm-run-${id}`}
+        />
       </div>
     </BaseNodeShell>
   );

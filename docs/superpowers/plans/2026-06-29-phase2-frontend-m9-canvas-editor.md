@@ -73,27 +73,51 @@
 | `loop` | ✅ 简化串行 + 作为输入源 |
 | `ltxDirector` / `promptGroup` | 🟡 仍 defer Batch 4 |
 
-## Batch 4 缺口（待 parity）
+## Batch 4（已完成）
 
-### 节点运行 / 编排
+| 能力 | 模块 | 说明 |
+|------|------|------|
+| 统一节点运行器 | `lib/runNode.ts` | `runGeneratorNode` / `runMsGenNode` / `runComfyNode` / `runVideoNode` / `runLlmNode` / `runRhNode`；单节点与级联共用 |
+| 级联引擎 | `lib/cascade.ts` | `computeCascadeOrder` / `resolveCascadeLoop` / `runNodeCascade`（serial loop）；`runStatus` / `runError` / `_cascadeIdx` |
+| 撤销 / 复制粘贴 | `lib/history.ts` + `CanvasEditorPage` | `UNDO_MAX=30`；Ctrl+Z / Ctrl+Shift+Z / Ctrl+C / Ctrl+V |
+| EditorActions 扩展 | `EditorActionsContext` | `runCascade` / `undo` / `redo` / `copySelected` / `paste` |
+| 级联 UI | `NodeRunActions` + 工具栏 | 生成器「级联」按钮；顶栏「运行选中链」；Output / Loop 级联入口 |
+| Loop 完整 context | `graph.ts` LoopContext | `{ index, total, nodeId }` 传入 `resolveRunPayload` |
+| PromptGroup 运行 | `PromptGroupNode` | 聚合 preview + 下游级联 |
+| Comfy / RH UI | `ComfyNode` / `RhNode` | mode select；rhParams JSON textarea |
+| 资产库侧栏 | `AssetsSidebar.tsx` | `GET /api/asset-library`；点击创建 image 节点 |
+| E2E | `m9-canvas-editor.spec.ts` | 级联链 mock + assets toggle + undo |
 
-- `runNodeCascade` 全链级联一键运行
-- LTX Director 完整时间轴与子 `text` 段
-- ComfyUI enhance / edit / custom workflow 全模式 UI
-- RunningHub `rhParams` 完整映射
-- loop 完整 `loopContext` 与级联触发下游 generator
-- promptGroup 独立运行逻辑
+### Batch 4 defer（文档记录，不实现）
 
-### 画布能力
-
-- 上游连线拖拽排序、`reorderInput`
+- LTX Director 完整时间轴编辑
+- WebSocket 协作
+- 图片编辑器、PS/Chrome 插件
 - 端口类型校验、临时连线预览
-- 节点运行队列、任务恢复
-- 复制粘贴、撤销栈
-- 资产库侧栏、工作流导入/导出
-- 图片编辑器、PS/Chrome 插件联动
-- WebSocket 多人协作
-- Tauri 2 桌面打包
+- 任务恢复队列
+- loop parallel 模式级联
+
+## Batch 5 / M10 缺口（Tauri 与高级 parity）
+
+| 项 | 说明 |
+|----|------|
+| **M10 Tauri 2 桌面** | sidecar 生命周期、托盘、Win/macOS 安装包 |
+| 上游连线拖拽排序 | `reorderInput` |
+| 工作流导入/导出 | workflow JSON |
+| 节点运行队列 / 任务恢复 | 上游 queue |
+| LTX Director 完整运行 | 时间轴 + text 段 |
+| Comfy enhance/edit 全参数 UI | 上游完整表单 |
+| RunningHub rhAppInfo 选择器 | 上游应用列表 |
+| WebSocket 多人协作 | `/ws` |
+| 图片编辑器 / 插件联动 | PS/Chrome |
+
+## Batch 4 缺口（已关闭 — 见上表已完成项）
+
+~~以下 Batch 4 原缺口已在本次交付~~
+
+### 节点运行 / 编排（剩余 defer 见上）
+
+### 画布能力（剩余 defer 见上）
 
 ## 验证
 

@@ -69,6 +69,75 @@ const MOCK_CANVAS_WITH_GENERATOR = {
   updated_at: Date.now(),
 };
 
+const MOCK_CANVAS_CASCADE_CHAIN = {
+  id: "canvas-3",
+  title: "级联链测试",
+  icon: "layout",
+  kind: "canvas",
+  nodes: [
+    {
+      id: "prompt_cascade",
+      type: "prompt",
+      x: 80,
+      y: 200,
+      text: "森林中的小径",
+    },
+    {
+      id: "gen_cascade",
+      type: "generator",
+      x: 360,
+      y: 200,
+      apiProvider: "comfly",
+      model: "dall-e-3",
+      ratio: "square",
+      resolution: "1k",
+      inputs: ["prompt_cascade"],
+    },
+    {
+      id: "out_cascade",
+      type: "output",
+      x: 640,
+      y: 200,
+      images: [],
+    },
+  ],
+  connections: [
+    { id: "c1", from: "prompt_cascade", to: "gen_cascade" },
+    { id: "c2", from: "gen_cascade", to: "out_cascade" },
+  ],
+  viewport: { x: 0, y: 0, scale: 1 },
+  logs: [],
+  settings: {},
+  updated_at: Date.now(),
+};
+
+const MOCK_ASSET_LIBRARY = {
+  library: {
+    libraries: [
+      {
+        id: "lib1",
+        name: "默认库",
+        type: "default",
+        categories: [
+          {
+            id: "cat1",
+            name: "图片",
+            type: "image",
+            items: [
+              {
+                id: "asset1",
+                name: "测试图",
+                url: "/uploads/test.png",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    active_library_id: "lib1",
+  },
+};
+
 test.describe("M9 canvas editor", () => {
   test("无限画布页加载 shell 与 xyflow 渲染", async ({ page }) => {
     await page.route("**/api/canvases/canvas-1", async (route) => {
@@ -140,5 +209,58 @@ test.describe("M9 canvas editor", () => {
     await page.getByTestId("canvas-logs-toggle").click();
     await expect(page.getByTestId("canvas-logs-panel")).toBeVisible();
     await expect(page.getByText("生成日志")).toBeVisible();
+  });
+
+  test("Batch 4：级联按钮、资产库侧栏与撤销", async ({ page }) => {
+    await page.route("**/api/canvases/canvas-3", async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ canvas: MOCK_CANVAS_CASCADE_CHAIN }),
+        });
+        return;
+      }
+      if (route.request().method() === "PUT") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            canvas: { ...MOCK_CANVAS_CASCADE_CHAIN, updated_at: Date.now() },
+          }),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.route("**/api/asset-library", async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(MOCK_ASSET_LIBRARY),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.goto("/canvas/canvas-3");
+    await expect(page.getByTestId("canvas-node-gen_cascade")).toBeVisible();
+    await expect(page.getByTestId("canvas-cascade-run")).toBeVisible();
+    await expect(page.getByTestId("canvas-cascade-run-gen_cascade")).toBeVisible();
+
+    await page.getByTestId("canvas-assets-toggle").click();
+    await expect(page.getByTestId("canvas-assets-sidebar")).toBeVisible();
+    await expect(page.getByTestId("canvas-asset-item-asset1")).toBeVisible();
+
+    const beforeCount = await page.locator("[data-testid^='canvas-node-']").count();
+    await page.getByTestId("canvas-create-fab").click();
+    await page.getByTestId("canvas-create-prompt").click();
+    await expect(page.locator("[data-testid^='canvas-node-']")).toHaveCount(beforeCount + 1);
+
+    await page.keyboard.press("ControlOrMeta+z");
+    await expect(page.locator("[data-testid^='canvas-node-']")).toHaveCount(beforeCount);
   });
 });
