@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 7 AI 上传、画布资产与在线生图`（~108 API paths，pytest **90 passed**）
+**当前阶段**：`M2–M3 — 后端 Batch 8 完成，legacy HTTP 路由全覆盖`（**126** API paths，pytest **103 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~108/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
+| M2–M3 后端 100% parity | 🟢 近完成 | 已迁移 **126/123** legacy OpenAPI paths（+3 桌面/数据路由）；**SQLite** 默认存储 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -69,6 +69,40 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
 
 ---
+
+---
+
+---
+
+### 2026-06-29 — Phase 1 Batch 8：聊天、画布 AI、角度生成与 GitHub 更新
+
+**变更摘要**
+
+- 新增 `services/chat.py`、`routes/chat.py`（**3** 端点：`/api/chat`、`/api/chat/stream`、`/api/chat/agent` legacy parity）
+- 新增 `services/canvas_llm.py`、`canvas_video.py`、`modelscope_generate.py`、`routes/canvas_ai.py`（**4** 端点含 `/generate` 云端 Z-Image）
+- 新增 `routes/angle.py`（**2** 端点）、`services/smart_canvas.py`（group-export）
+- 新增 `services/cloud_upload.py`（temp-sh / cloud-video）、`services/app_update.py`（**6** 更新端点）
+- 测试：`test_chat.py`、`test_canvas_ai.py`、`test_angle.py`、`test_update.py`；OpenAPI baseline **126 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/`、`routes/`、`schemas/`
+- `tests/api/`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch8.md`
+
+**验证项**
+
+- `uv run pytest tests/api -v` → **103 passed**
+- legacy OpenAPI 路径全覆盖（`missing: []`）
+
+**下一步**
+
+- 启动 M4 前端 Design System + 设置页迁移
+- 画布节点分批 parity（canvas 页最后）
+
+**方向对齐**
+
+- v1 strict parity；`/api/chat/agent` 仅 legacy 路由，无 Agent 调度画布
 
 ---
 

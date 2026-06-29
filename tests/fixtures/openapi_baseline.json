@@ -3842,6 +3842,690 @@
         }
       }
     },
+    "/api/chat": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Chat",
+        "operationId": "chat_api_chat_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/agent": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Chat Agent",
+        "operationId": "chat_agent_api_chat_agent_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/stream": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Chat Stream",
+        "operationId": "chat_stream_api_chat_stream_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate": {
+      "post": {
+        "tags": [
+          "canvas-ai"
+        ],
+        "summary": "Generate Cloud",
+        "operationId": "generate_cloud_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudGenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-video": {
+      "post": {
+        "tags": [
+          "canvas-ai"
+        ],
+        "summary": "Api Canvas Video",
+        "operationId": "api_canvas_video_api_canvas_video_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasVideoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/canvas-llm": {
+      "post": {
+        "tags": [
+          "canvas-ai"
+        ],
+        "summary": "Api Canvas Llm",
+        "operationId": "api_canvas_llm_api_canvas_llm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanvasLLMRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ms/generate": {
+      "post": {
+        "tags": [
+          "canvas-ai"
+        ],
+        "summary": "Api Ms Generate",
+        "operationId": "api_ms_generate_api_ms_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MsGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/angle/poll_status": {
+      "post": {
+        "tags": [
+          "angle"
+        ],
+        "summary": "Poll Angle Cloud",
+        "operationId": "poll_angle_cloud_api_angle_poll_status_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudPollRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/angle/generate": {
+      "post": {
+        "tags": [
+          "angle"
+        ],
+        "summary": "Generate Angle Cloud",
+        "operationId": "generate_angle_cloud_api_angle_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudGenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/smart-canvas/group-export": {
+      "post": {
+        "tags": [
+          "smart-canvas"
+        ],
+        "summary": "Export Smart Canvas Group",
+        "operationId": "export_smart_canvas_group_api_smart_canvas_group_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmartCanvasGroupExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/temp-sh/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Temp Sh Upload",
+        "operationId": "temp_sh_upload_api_temp_sh_upload_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TempShUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cloud-video/upload": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "summary": "Cloud Video Upload",
+        "operationId": "cloud_video_upload_api_cloud_video_upload_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudVideoUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update-connectivity/probe": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Update Connectivity Probe",
+        "operationId": "update_connectivity_probe_api_update_connectivity_probe_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update-connectivity": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Update Connectivity",
+        "operationId": "update_connectivity_api_update_connectivity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/check-update": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Check Update",
+        "operationId": "check_update_api_check_update_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update-from-github": {
+      "post": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Update From Github",
+        "operationId": "update_from_github_api_update_from_github_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequest",
+                "default": {
+                  "auto_restart": false,
+                  "restart_delay": 3,
+                  "source": "github",
+                  "fallback": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update-backups": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Get Update Backups",
+        "operationId": "get_update_backups_api_update_backups_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update-rollback": {
+      "post": {
+        "tags": [
+          "update"
+        ],
+        "summary": "Rollback Update",
+        "operationId": "rollback_update_api_update_rollback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RollbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/canvases": {
       "get": {
         "tags": [
@@ -5605,6 +6289,63 @@
         "type": "object",
         "title": "CanvasCreateRequest"
       },
+      "CanvasLLMRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "system_prompt": {
+            "type": "string",
+            "title": "System Prompt",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          },
+          "images": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "videos": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Videos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "CanvasLLMRequest"
+      },
       "CanvasMetaUpdate": {
         "properties": {
           "title": {
@@ -5759,6 +6500,123 @@
         "type": "object",
         "title": "CanvasSaveRequest"
       },
+      "CanvasVideoRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Prompt"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": "veo3-fast"
+          },
+          "duration": {
+            "type": "integer",
+            "title": "Duration",
+            "default": 5
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "title": "Aspect Ratio",
+            "default": "16:9"
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution",
+            "default": ""
+          },
+          "size": {
+            "type": "string",
+            "title": "Size",
+            "default": ""
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/AIReference"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "videos": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Videos"
+          },
+          "audios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Audios"
+          },
+          "enhance_prompt": {
+            "type": "boolean",
+            "title": "Enhance Prompt",
+            "default": false
+          },
+          "enable_upsample": {
+            "type": "boolean",
+            "title": "Enable Upsample",
+            "default": false
+          },
+          "watermark": {
+            "type": "boolean",
+            "title": "Watermark",
+            "default": false
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "camerafixed": {
+            "type": "boolean",
+            "title": "Camerafixed",
+            "default": false
+          },
+          "return_last_frame": {
+            "type": "boolean",
+            "title": "Return Last Frame",
+            "default": false
+          },
+          "generate_audio": {
+            "type": "boolean",
+            "title": "Generate Audio",
+            "default": false
+          },
+          "multimodal": {
+            "type": "boolean",
+            "title": "Multimodal",
+            "default": false
+          },
+          "trusted_asset": {
+            "type": "boolean",
+            "title": "Trusted Asset",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "title": "CanvasVideoRequest"
+      },
       "CanvasWorkflowExportRequest": {
         "properties": {
           "nodes": {
@@ -5805,6 +6663,183 @@
         },
         "type": "object",
         "title": "CanvasWorkflowExportRequest"
+      },
+      "ChatRequest": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id",
+            "default": ""
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "system_prompt": {
+            "type": "string",
+            "title": "System Prompt",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "image_model": {
+            "type": "string",
+            "title": "Image Model",
+            "default": ""
+          },
+          "image_provider": {
+            "type": "string",
+            "title": "Image Provider",
+            "default": ""
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "chat"
+          },
+          "size": {
+            "type": "string",
+            "title": "Size",
+            "default": "1024x1024"
+          },
+          "quality": {
+            "type": "string",
+            "title": "Quality",
+            "default": "auto"
+          },
+          "reference_images": {
+            "items": {
+              "$ref": "#/components/schemas/AIReference"
+            },
+            "type": "array",
+            "title": "Reference Images"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ChatRequest"
+      },
+      "CloudGenRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution",
+            "default": "1024x1024"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "zimage"
+          },
+          "image_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Image Urls"
+          },
+          "loras": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loras"
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "title": "CloudGenRequest"
+      },
+      "CloudPollRequest": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "title": "CloudPollRequest"
+      },
+      "CloudVideoUploadRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "default": "auto"
+          }
+        },
+        "type": "object",
+        "title": "CloudVideoUploadRequest"
       },
       "ComfyInstancesPayload": {
         "properties": {
@@ -6202,6 +7237,71 @@
         "type": "object",
         "title": "MigrateRequest"
       },
+      "MsGenerateRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": "black-forest-labs/FLUX.2-klein-9B"
+          },
+          "image_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Image Urls"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 0
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 0
+          },
+          "size": {
+            "type": "string",
+            "title": "Size",
+            "default": ""
+          },
+          "loras": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loras"
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "title": "MsGenerateRequest"
+      },
       "OnlineImageRequest": {
         "properties": {
           "prompt": {
@@ -6368,6 +7468,27 @@
         },
         "type": "object",
         "title": "PromptLibraryRequest"
+      },
+      "RollbackRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "auto_restart": {
+            "type": "boolean",
+            "title": "Auto Restart",
+            "default": false
+          },
+          "restart_delay": {
+            "type": "integer",
+            "title": "Restart Delay",
+            "default": 3
+          }
+        },
+        "type": "object",
+        "title": "RollbackRequest"
       },
       "RunningHubSubmitRequest": {
         "properties": {
@@ -6620,6 +7741,66 @@
         "type": "object",
         "title": "SharedFolderRegister"
       },
+      "SmartCanvasGroupExportItem": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": ""
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "SmartCanvasGroupExportItem"
+      },
+      "SmartCanvasGroupExportRequest": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name",
+            "default": ""
+          },
+          "folder": {
+            "type": "string",
+            "title": "Folder",
+            "default": ""
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SmartCanvasGroupExportItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "title": "SmartCanvasGroupExportRequest"
+      },
+      "TempShUploadRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "TempShUploadRequest"
+      },
       "TestConnectionPayload": {
         "properties": {
           "base_url": {
@@ -6650,6 +7831,32 @@
         },
         "type": "object",
         "title": "TestConnectionPayload"
+      },
+      "UpdateRequest": {
+        "properties": {
+          "auto_restart": {
+            "type": "boolean",
+            "title": "Auto Restart",
+            "default": false
+          },
+          "restart_delay": {
+            "type": "integer",
+            "title": "Restart Delay",
+            "default": 3
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "github"
+          },
+          "fallback": {
+            "type": "boolean",
+            "title": "Fallback",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "UpdateRequest"
       },
       "ValidationError": {
         "properties": {

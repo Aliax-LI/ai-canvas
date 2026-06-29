@@ -37,23 +37,26 @@ def test_legacy_openapi_has_expected_route_count() -> None:
     assert len(paths) > 50, f"legacy baseline has only {len(paths)} paths; expected ~147"
 
 
-def test_phase0_openapi_paths_are_subset_of_legacy() -> None:
-    """Phase 0 scaffold exposes a small subset of legacy routes (plus documented additions)."""
+def test_migrated_openapi_paths_cover_legacy() -> None:
+    """Migrated app exposes all legacy routes plus documented additions."""
     legacy_paths = _load_paths(LEGACY_BASELINE)
-    phase0_paths = set(create_app().openapi().get("paths", {}))
+    app_paths = set(create_app().openapi().get("paths", {}))
 
-    assert phase0_paths, "Phase 0 app should expose at least one path"
-    assert len(phase0_paths) < len(legacy_paths), (
-        f"Phase 0 ({len(phase0_paths)} paths) should be smaller than legacy ({len(legacy_paths)})"
+    assert app_paths, "App should expose at least one path"
+    assert len(app_paths) >= len(legacy_paths) - 5, (
+        f"App ({len(app_paths)} paths) should cover nearly all legacy ({len(legacy_paths)}) routes"
     )
 
-    shared = phase0_paths - PHASE0_ONLY_PATHS
+    missing = legacy_paths - app_paths
+    assert not missing, f"Legacy paths missing from app: {sorted(missing)}"
+
+    shared = app_paths - PHASE0_ONLY_PATHS
     extra = shared - legacy_paths
-    assert not extra, f"Phase 0 paths not in legacy baseline: {sorted(extra)}"
+    assert not extra, f"App paths not in legacy baseline: {sorted(extra)}"
 
 
-def test_phase0_baseline_fixture_matches_app() -> None:
-    """Committed Phase 0 fixture stays in sync with create_app()."""
+def test_openapi_baseline_fixture_matches_app() -> None:
+    """Committed OpenAPI fixture stays in sync with create_app()."""
     if not PHASE0_BASELINE.is_file():
         pytest.skip("openapi_baseline.json not generated yet")
 
