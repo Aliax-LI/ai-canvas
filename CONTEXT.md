@@ -18,15 +18,15 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端脚手架`（Phase 0 可运行 API + legacy static 挂载）
+**当前阶段**：`M1 — 后端 Batch 2 完成`（Phase 0 脚手架 + Batch 1 history/ws + Batch 2 media/upload/canvases/projects，OpenAPI baseline **20 paths**）
 
 **当前里程碑进度**：
 
 | 里程碑 | 状态 | 说明 |
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
-| M1 uv 后端壳 | 🟡 进行中 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | ⚪ 未开始 | 147 路由拆分 |
+| M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~20/147 路由（history、ws、media、canvases/projects）；pytest **33 passed** |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,60 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — Phase 1 Task 5：Canvases + Projects CRUD 迁移
+
+**变更摘要**
+
+- 新增 `services/canvas_store.py`：画布 CRUD、回收站（delete/restore/purge）、meta/touch、乐观锁 PUT、legacy `coding/` 画布目录只读回退
+- 新增 `services/projects.py`：项目列表/创建/更新/删除，默认项目保护，删除时画布迁回 default
+- 新增 `schemas/canvas.py`、`routes/canvases.py`（11 画布 + 4 项目端点）
+- 新增 `tests/api/test_canvases.py`（9 条）
+
+**影响范围**
+
+- `services/api/src/infinite_canvas/`（schemas、services、routes、core/paths.py）
+- `tests/api/test_canvases.py`、`tests/fixtures/openapi_baseline.json`
+- `CONTEXT.md`
+
+**验证**
+
+- [x] `uv run pytest tests/api -v` 33 passed
+
+**下一步**
+
+- Phase 1 后续：assets/providers/comfyui 等域迁移
+
+**方向对齐**：✅ JSON 形状与 legacy 一致；数据目录 `{app_data_dir()}/data/canvases/` + `projects.json`；未改 `coding/`
+
+---
+
+### 2026-06-29 — Phase 1 Task 4：Media + Upload 路由迁移
+
+**变更摘要**
+
+- 新增 `core/media.py`（PIL 预览/JPEG 缓存、content-type、本地路径解析）与 `core/comfyui.py`（`COMFYUI_INSTANCES` 环境变量）
+- 新增 `services/media.py`、`routes/media.py`：`GET /api/media-preview`、`/api/image-jpeg`、`/api/view`、`/api/download-output`、`POST /api/upload`
+- 扩展 `core/paths.py`（`media_preview_dir`、assets input/output）、`core/config.py`（comfyui_instances 默认）
+- 新增 `tests/api/test_media.py`（9 条）
+
+**影响范围**
+
+- `services/api/src/infinite_canvas/core/`、`services/`、`routes/`
+- `tests/api/test_media.py`、`tests/fixtures/openapi_baseline.json`
+- `CONTEXT.md`
+
+**验证**
+
+- [x] `uv run pytest tests/api -v` 33 passed
+
+**下一步**
+
+- Task 5 canvases/projects（同批 Batch 2）
+
+**方向对齐**：✅ 预览缓存目录 `{app_data_dir()}/data/media_previews`；ComfyUI 代理与 legacy 行为一致；未改 `coding/`
 
 ---
 
