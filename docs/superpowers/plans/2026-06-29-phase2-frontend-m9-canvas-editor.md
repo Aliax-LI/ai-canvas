@@ -52,26 +52,48 @@
 | `promptGroup` | 提示词组 | — | 🟡 UI + data；运行 stub → Batch 3 |
 | `fallback` | 未知类型降级 | — | ✅ JSON preview |
 
-## Batch 3 缺口（待 parity）
+## Batch 3（已完成）
+
+| 能力 | 模块 | 说明 |
+|------|------|------|
+| 图解析引擎 | `lib/graph.ts` | `generatorSources` / `orderedSources` / `resolveRunPayload` / `findDownstreamOutput` |
+| 运行上下文 | `EditorActionsContext` + `CanvasEditorPage` | `getRunContext` / `appendLog` / `writeOutputImages` |
+| 可运行节点重构 | `GeneratorNode` 等 6 类 | 上游 prompt + reference_images；写入 `generatedOutputs` 与下游 output |
+| Loop 基础运行 | `LoopNode` | 串行 prompt 变体日志；作为 generator 输入源 |
+| 生成日志面板 | `LogsPanel.tsx` | 右侧 Sheet；`logs[]` 持久化 |
+| 画布交互 | `CanvasFlow.tsx` | 框选多选、Delete 删节点/边、`onConnect` 同步 `inputs` |
+| E2E | `m9-canvas-editor.spec.ts` | prompt 预览 + 日志 toggle |
+
+### Batch 3 节点运行状态
+
+| type | Batch 3 状态 |
+|------|--------------|
+| `generator` / `msgen` / `comfy` / `video` / `rh` | ✅ 连线输入解析 + 运行 + output 写入 |
+| `llm` | ✅ 上游 prompt 或 chatInput |
+| `loop` | ✅ 简化串行 + 作为输入源 |
+| `ltxDirector` / `promptGroup` | 🟡 仍 defer Batch 4 |
+
+## Batch 4 缺口（待 parity）
 
 ### 节点运行 / 编排
 
-- 上游输入解析（连线 prompt / image refs）
-- 级联执行、循环批次、Output 节点写入
-- ComfyUI enhance / edit / custom workflow 全模式
-- RunningHub 参数映射与 rhParams
-- LTX Director 时间轴编辑与子 `text` 段
-- loop / promptGroup 完整运行逻辑
+- `runNodeCascade` 全链级联一键运行
+- LTX Director 完整时间轴与子 `text` 段
+- ComfyUI enhance / edit / custom workflow 全模式 UI
+- RunningHub `rhParams` 完整映射
+- loop 完整 `loopContext` 与级联触发下游 generator
+- promptGroup 独立运行逻辑
 
 ### 画布能力
 
-- 上游连线拖拽、端口类型校验、临时连线预览
+- 上游连线拖拽排序、`reorderInput`
+- 端口类型校验、临时连线预览
 - 节点运行队列、任务恢复
-- 框选、多选、复制粘贴、撤销栈
+- 复制粘贴、撤销栈
 - 资产库侧栏、工作流导入/导出
 - 图片编辑器、PS/Chrome 插件联动
-- 生成日志面板
 - WebSocket 多人协作
+- Tauri 2 桌面打包
 
 ## 验证
 

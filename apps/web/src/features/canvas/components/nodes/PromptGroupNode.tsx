@@ -1,6 +1,6 @@
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { stubBatch3Run } from "../../lib/nodeRun";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { PromptGroupNodeData } from "@infinite-canvas/canvas-schema";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export function PromptGroupNode({ id, data, selected }: CanvasNodeProps<PromptGr
           variant="outline"
           className="w-full"
           data-testid={`canvas-promptgroup-run-${id}`}
-          onClick={() => stubBatch3Run("提示词组")}
+          onClick={() => toast.info("提示词组完整运行将在 Batch 4 实现")}
         >
           <Play className="mr-1 size-3" />
           运行

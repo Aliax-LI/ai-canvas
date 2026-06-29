@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createCanvasLlm } from "../../api";
+import { useCanvasEditorActions } from "../EditorActionsContext";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { LlmNodeData } from "@infinite-canvas/canvas-schema";
 
 export function LlmNode({ id, data, selected }: CanvasNodeProps<LlmNodeData>) {
+  const { nodes, edges, getRunContext, updateNodeData, appendLog } = useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const provider = String(data.llmProvider ?? "comfly");
   const model = String(data.model ?? "");
@@ -16,21 +18,42 @@ export function LlmNode({ id, data, selected }: CanvasNodeProps<LlmNodeData>) {
   const runError = String(data.runError ?? "");
 
   const handleRun = useCallback(async () => {
+    const { prompt } = getRunContext(id);
+    const message = prompt.trim() || String(data.chatInput ?? "").trim() || "Rewrite this into an image prompt";
+
     setRunning(true);
+    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
+    appendLog({ nodeId: id, nodeType: "llm", status: "running" });
+
     try {
       const result = await createCanvasLlm({
-        message: data.chatInput || "Rewrite this into an image prompt",
+        message,
         system_prompt: String(data.systemPrompt ?? ""),
         model,
         provider,
       });
-      toast.success(result.text ? "LLM 完成" : "LLM 已响应");
+      const text = result.text ?? "";
+      updateNodeData(id, {
+        running: false,
+        runStatus: "succeeded",
+        outputText: text,
+      });
+      appendLog({
+        nodeId: id,
+        nodeType: "llm",
+        status: "succeeded",
+        message: text ? text.slice(0, 48) : "LLM 已响应",
+      });
+      toast.success(text ? "LLM 完成" : "LLM 已响应");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "LLM 运行失败");
+      const msg = e instanceof Error ? e.message : "LLM 运行失败";
+      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
+      appendLog({ nodeId: id, nodeType: "llm", status: "failed", message: msg });
+      toast.error(msg);
     } finally {
       setRunning(false);
     }
-  }, [data.chatInput, data.systemPrompt, model, provider]);
+  }, [id, getRunContext, data.chatInput, data.systemPrompt, model, provider, updateNodeData, appendLog, nodes, edges]);
 
   return (
     <BaseNodeShell

@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M9 — 无限画布 Batch 2 完成`（14 类节点 + Fallback；Tauri 待做）
+**当前阶段**：`M9 — 无限画布 Batch 3 完成`（运行编排 + 连线输入解析；Tauri 待做）
 
 **当前里程碑进度**：
 
@@ -32,7 +32,7 @@
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
 | M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
-| M9 无限画布 + Tauri | 🟡 进行中 | Batch 2：14 类节点 + Fallback + API 运行；Tauri 待做 |
+| M9 无限画布 + Tauri | 🟡 进行中 | Batch 3：图解析 + 运行编排 + 日志面板；Tauri 待做 |
 
 ---
 
@@ -51,7 +51,7 @@
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
-| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 Batch 1–2 |
+| canvas.html | `/canvas/:id` | 🟡 @xyflow 编辑器 + 14 节点 + Batch 3 运行编排 |
 | smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
@@ -73,6 +73,41 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M9 前端：无限画布 Batch 3 运行编排
+
+**变更摘要**
+
+- **`lib/graph.ts`**：`generatorSources` / `orderedSources` / `resolveRunPayload` / `findDownstreamOutput` / `CANVAS_GENERATOR_TYPES`（对齐上游 `canvas.js`）
+- **`EditorActionsContext`** 扩展：`getRunContext` / `appendLog` / `writeOutputImages` + `nodes` / `edges`
+- 重构 **Generator / MsGen / Comfy / Video / LLM / RH** 节点：上游 prompt + reference_images；`generatedOutputs` + 下游 output 写入
+- **`LoopNode`** 简化串行运行 + 作为 generator 输入源
+- **`LogsPanel`** 右侧抽屉；`CanvasFlow` 多选/删除/`onConnect` 同步 inputs
+- E2E：generator prompt 预览 + 日志 toggle
+
+**影响路径**
+
+- `apps/web/src/features/canvas/lib/graph.ts`
+- `apps/web/src/features/canvas/lib/runHelpers.ts`
+- `apps/web/src/features/canvas/components/**`
+- `tests/e2e/m9-canvas-editor.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m9-canvas-editor.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **11 passed**
+
+**下一步**
+
+- M9 Batch 4：级联 `runNodeCascade`、LTX 时间轴、撤销栈、资产库侧栏
+- Tauri 2 桌面打包
+
+**方向对齐**
+
+- 单节点运行已消费连线输入并写 output；全链级联与高级模式 UI 待 Batch 4
 
 ---
 

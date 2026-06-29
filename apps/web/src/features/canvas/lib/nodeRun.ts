@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import {
   pollCanvasComfyTask,
   pollCanvasImageTask,
@@ -34,8 +33,4 @@ export async function waitForRhTask(taskId: string): Promise<{ urls?: string[] }
     await new Promise((r) => setTimeout(r, 2500));
   }
   throw new Error("RunningHub 任务超时");
-}
-
-export function stubBatch3Run(label: string): void {
-  toast.info(`${label} 级联运行将在 Batch 3 实现`);
 }

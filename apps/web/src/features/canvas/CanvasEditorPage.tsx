@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Edge, Node, Viewport } from "@xyflow/react";
+import type { Connection, Edge, Node, Viewport } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,18 @@ import {
 import { CanvasFlow } from "./components/CanvasFlow";
 import { CreateFab, CreateMenu } from "./components/CreateMenu";
 import { CanvasEditorActionsProvider } from "./components/EditorActionsContext";
+import { LogsPanel } from "./components/LogsPanel";
 import { useCanvasShell } from "./context";
+import {
+  isGeneratorType,
+  resolveRunPayload,
+  syncGeneratorInputs,
+} from "./lib/graph";
+import {
+  mergeOutputImages,
+  newLogEntry,
+  type CanvasLogEntry,
+} from "./lib/runHelpers";
 import {
   flowEdgesToLegacy,
   flowNodesToLegacy,
@@ -24,10 +35,23 @@ import {
   legacyConnectionsToFlow,
   legacyNodesToFlow,
   legacyViewportToFlow,
+  newConnectionId,
 } from "./lib/serialize";
 
 const CLIENT_ID = newCanvasClientId();
 const SAVE_DELAY_MS = 450;
+const MAX_LOGS = 500;
+
+function normalizeLogs(raw: Record<string, unknown>[]): CanvasLogEntry[] {
+  return raw.map((item, i) => ({
+    id: String(item.id ?? `log_legacy_${i}`),
+    ts: Number(item.ts ?? item.time ?? Date.now()),
+    nodeId: String(item.nodeId ?? item.node_id ?? ""),
+    nodeType: item.nodeType ? String(item.nodeType) : undefined,
+    status: (item.status as CanvasLogEntry["status"]) ?? "succeeded",
+    message: item.message ? String(item.message) : undefined,
+  }));
+}
 
 export function CanvasEditorPage() {
   const { id = "" } = useParams<{ id: string }>();
@@ -43,7 +67,8 @@ export function CanvasEditorPage() {
   const [viewport, setViewport] = useState<Viewport>({ x: 0, y: 0, zoom: 1 });
   const [icon, setIcon] = useState("layout");
   const [settings, setSettings] = useState<Record<string, unknown>>({});
-  const [logs, setLogs] = useState<Record<string, unknown>[]>([]);
+  const [logs, setLogs] = useState<CanvasLogEntry[]>([]);
+  const [logsOpen, setLogsOpen] = useState(false);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [flowViewport, setFlowViewport] = useState<Viewport | undefined>();
@@ -66,7 +91,7 @@ export function CanvasEditorPage() {
     setTitle(canvas.title || "未命名画布");
     setIcon(canvas.icon || "layout");
     setSettings(canvas.settings ?? {});
-    setLogs(canvas.logs ?? []);
+    setLogs(normalizeLogs(canvas.logs));
     setUpdatedAt(canvas.updated_at ?? 0);
     hydratedRef.current = true;
   }, [canvasQuery.data, setTitle]);
@@ -99,7 +124,7 @@ export function CanvasEditorPage() {
       nodes: flowNodesToLegacy(nodes),
       connections: flowEdgesToLegacy(edges),
       viewport: flowViewportToLegacy(viewport),
-      logs,
+      logs: logs.slice(-MAX_LOGS) as unknown as Record<string, unknown>[],
       settings,
       base_updated_at: updatedAt,
       client_id: CLIENT_ID,
@@ -160,6 +185,81 @@ export function CanvasEditorPage() {
     [scheduleSave],
   );
 
+  const appendLog = useCallback(
+    (entry: Omit<CanvasLogEntry, "id" | "ts"> & { ts?: number }) => {
+      setLogs((prev) => [...prev.slice(-(MAX_LOGS - 1)), newLogEntry(entry)]);
+      scheduleSave();
+    },
+    [scheduleSave],
+  );
+
+  const writeOutputImages = useCallback(
+    (outputNodeId: string, urls: string[]) => {
+      if (!urls.length) return;
+      setNodes((prev) =>
+        prev.map((n) => {
+          if (n.id !== outputNodeId) return n;
+          const images = mergeOutputImages(
+            (n.data as { images?: { url?: string }[] }).images,
+            urls,
+          );
+          return { ...n, data: { ...n.data, images } };
+        }),
+      );
+      scheduleSave();
+    },
+    [scheduleSave],
+  );
+
+  const getRunContext = useCallback(
+    (nodeId: string) => resolveRunPayload(nodeId, nodes, edges),
+    [nodes, edges],
+  );
+
+  const handleConnect = useCallback(
+    (connection: Connection) => {
+      if (!connection.source || !connection.target) return;
+      const newEdge: Edge = {
+        id: newConnectionId(),
+        source: connection.source,
+        target: connection.target,
+        sourceHandle: connection.sourceHandle,
+        targetHandle: connection.targetHandle,
+        type: "default",
+      };
+
+      const nextEdges = [...edges, newEdge];
+      setEdges(nextEdges);
+
+      const targetNode = nodes.find((n) => n.id === connection.target);
+      if (targetNode && isGeneratorType(targetNode.type)) {
+        const inputs = syncGeneratorInputs(
+          connection.target,
+          (targetNode.data ?? {}) as Record<string, unknown>,
+          nodes,
+          nextEdges,
+        );
+        updateNodeData(connection.target, { inputs });
+      } else {
+        scheduleSave();
+      }
+    },
+    [nodes, edges, updateNodeData, scheduleSave],
+  );
+
+  const editorActions = useMemo(
+    () => ({
+      nodes,
+      edges,
+      updateNodeData,
+      scheduleSave,
+      getRunContext,
+      appendLog,
+      writeOutputImages,
+    }),
+    [nodes, edges, updateNodeData, scheduleSave, getRunContext, appendLog, writeOutputImages],
+  );
+
   const uploadMutation = useMutation({
     mutationFn: uploadCanvasMedia,
     onSuccess: (files) => {
@@ -193,17 +293,19 @@ export function CanvasEditorPage() {
 
   return (
     <div data-testid="canvas-editor-page" className="relative flex flex-1 min-h-0 flex-col">
-      <CanvasEditorActionsProvider value={{ updateNodeData }}>
+      <CanvasEditorActionsProvider value={editorActions}>
+        <LogsPanel logs={logs} open={logsOpen} onOpenChange={setLogsOpen} />
         <div className="flex flex-1 min-h-0">
           <CanvasFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={setNodes}
-          onEdgesChange={setEdges}
-          onViewportChange={setViewport}
-          initialViewport={flowViewport}
-          onDirty={scheduleSave}
-        />
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={setNodes}
+            onEdgesChange={setEdges}
+            onViewportChange={setViewport}
+            initialViewport={flowViewport}
+            onDirty={scheduleSave}
+            onConnect={handleConnect}
+          />
         </div>
       </CanvasEditorActionsProvider>
 

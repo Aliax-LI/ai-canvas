@@ -34,6 +34,7 @@ interface CanvasFlowInnerProps {
   onViewportChange: (viewport: Viewport) => void;
   initialViewport?: Viewport;
   onDirty: () => void;
+  onConnect?: OnConnect;
 }
 
 function CanvasFlowInner({
@@ -44,6 +45,7 @@ function CanvasFlowInner({
   onViewportChange,
   initialViewport,
   onDirty,
+  onConnect: onConnectProp,
 }: CanvasFlowInnerProps) {
   const { setViewport } = useReactFlow();
 
@@ -55,10 +57,19 @@ function CanvasFlowInner({
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
+      const hasRemove = changes.some((c) => c.type === "remove");
       onNodesChange(applyNodeChanges(changes, nodes));
       if (changes.some((c) => c.type !== "select")) onDirty();
+      if (hasRemove) {
+        const removedIds = new Set(
+          changes.filter((c) => c.type === "remove").map((c) => c.id),
+        );
+        if (removedIds.size) {
+          onEdgesChange(edges.filter((e) => !removedIds.has(e.source) && !removedIds.has(e.target)));
+        }
+      }
     },
-    [nodes, onNodesChange, onDirty],
+    [nodes, edges, onNodesChange, onEdgesChange, onDirty],
   );
 
   const handleEdgesChange = useCallback(
@@ -71,6 +82,10 @@ function CanvasFlowInner({
 
   const handleConnect: OnConnect = useCallback(
     (connection: Connection) => {
+      if (onConnectProp) {
+        onConnectProp(connection);
+        return;
+      }
       onEdgesChange(
         addEdge(
           {
@@ -83,7 +98,7 @@ function CanvasFlowInner({
       );
       onDirty();
     },
-    [edges, onEdgesChange, onDirty],
+    [edges, onEdgesChange, onDirty, onConnectProp],
   );
 
   return (
@@ -102,6 +117,11 @@ function CanvasFlowInner({
       proOptions={{ hideAttribution: true }}
       className="bg-canvas-bg"
       data-testid="canvas-flow"
+      selectionOnDrag
+      panOnDrag={[1, 2]}
+      selectionKeyCode={null}
+      multiSelectionKeyCode="Shift"
+      deleteKeyCode={["Backspace", "Delete"]}
     >
       <Background
         variant={BackgroundVariant.Dots}

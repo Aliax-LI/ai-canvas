@@ -37,6 +37,38 @@ const MOCK_CANVAS = {
   updated_at: Date.now(),
 };
 
+const MOCK_CANVAS_WITH_GENERATOR = {
+  id: "canvas-2",
+  title: "生成器连线测试",
+  icon: "layout",
+  kind: "canvas",
+  nodes: [
+    {
+      id: "prompt_run",
+      type: "prompt",
+      x: 80,
+      y: 200,
+      text: "夕阳下的山脉",
+    },
+    {
+      id: "gen_run",
+      type: "generator",
+      x: 400,
+      y: 200,
+      apiProvider: "comfly",
+      model: "dall-e-3",
+      ratio: "square",
+      resolution: "1k",
+      inputs: ["prompt_run"],
+    },
+  ],
+  connections: [{ id: "c_prompt_gen", from: "prompt_run", to: "gen_run" }],
+  viewport: { x: 0, y: 0, scale: 1 },
+  logs: [],
+  settings: {},
+  updated_at: Date.now(),
+};
+
 test.describe("M9 canvas editor", () => {
   test("无限画布页加载 shell 与 xyflow 渲染", async ({ page }) => {
     await page.route("**/api/canvases/canvas-1", async (route) => {
@@ -86,5 +118,27 @@ test.describe("M9 canvas editor", () => {
 
     const outputNodes = page.locator("[data-testid^='canvas-node-']");
     await expect(outputNodes).toHaveCount(4);
+  });
+
+  test("Batch 3：日志面板与 generator 上游 prompt 预览", async ({ page }) => {
+    await page.route("**/api/canvases/canvas-2", async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ canvas: MOCK_CANVAS_WITH_GENERATOR }),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.goto("/canvas/canvas-2");
+    await expect(page.getByTestId("canvas-node-gen_run")).toBeVisible();
+    await expect(page.getByTestId("canvas-generator-prompt-preview")).toHaveText("夕阳下的山脉");
+
+    await page.getByTestId("canvas-logs-toggle").click();
+    await expect(page.getByTestId("canvas-logs-panel")).toBeVisible();
+    await expect(page.getByText("生成日志")).toBeVisible();
   });
 });

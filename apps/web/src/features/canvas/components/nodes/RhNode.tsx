@@ -5,33 +5,76 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { submitRunningHub, submitRunningHubWorkflow } from "../../api";
+import { useCanvasEditorActions } from "../EditorActionsContext";
+import { defaultRunPrompt, findDownstreamOutput, needPromptOrImage } from "../../lib/graph";
 import { waitForRhTask } from "../../lib/nodeRun";
+import { mergeGeneratedOutputs } from "../../lib/runHelpers";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { RhNodeData } from "@infinite-canvas/canvas-schema";
 
 export function RhNode({ id, data, selected }: CanvasNodeProps<RhNodeData>) {
+  const { nodes, edges, updateNodeData, getRunContext, appendLog, writeOutputImages } =
+    useCanvasEditorActions();
   const [running, setRunning] = useState(Boolean(data.running));
   const rhMode = String(data.rhMode ?? "app");
   const webappId = String(data.webappId ?? "");
   const workflowId = String(data.workflowId ?? "");
   const runError = String(data.runError ?? "");
+  const generatedOutputs = (data as { generatedOutputs?: unknown[] }).generatedOutputs;
 
   const handleRun = useCallback(async () => {
+    const { prompt, referenceImages } = getRunContext(id);
+    if (!needPromptOrImage(prompt, referenceImages)) {
+      toast.error("请连接提示词或参考图");
+      return;
+    }
+
     setRunning(true);
+    updateNodeData(id, { running: true, runStatus: "running", runError: "" });
+    appendLog({ nodeId: id, nodeType: "rh", status: "running" });
+
     try {
+      const effectivePrompt = defaultRunPrompt(prompt);
+      const nodeInfoList = [
+        { prompt: effectivePrompt, images: referenceImages.map((r) => r.url) },
+      ];
       const submit =
         rhMode === "workflow"
-          ? await submitRunningHubWorkflow({ workflowId, nodeInfoList: [] })
-          : await submitRunningHub({ webappId, nodeInfoList: [] });
+          ? await submitRunningHubWorkflow({ workflowId, nodeInfoList })
+          : await submitRunningHub({ webappId, nodeInfoList });
       if (!submit.taskId) throw new Error("未返回 taskId");
-      await waitForRhTask(submit.taskId);
+      const result = await waitForRhTask(submit.taskId);
+      const urls = result.urls ?? [];
+      if (urls.length) {
+        const outputs = mergeGeneratedOutputs(generatedOutputs, urls);
+        updateNodeData(id, { generatedOutputs: outputs });
+        const outNode = findDownstreamOutput(id, nodes, edges);
+        if (outNode) writeOutputImages(outNode.id, urls);
+      }
+      updateNodeData(id, { running: false, runStatus: "succeeded" });
+      appendLog({ nodeId: id, nodeType: "rh", status: "succeeded", message: "RunningHub 完成" });
       toast.success("RunningHub 任务完成");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "RunningHub 运行失败");
+      const msg = e instanceof Error ? e.message : "RunningHub 运行失败";
+      updateNodeData(id, { running: false, runStatus: "failed", runError: msg });
+      appendLog({ nodeId: id, nodeType: "rh", status: "failed", message: msg });
+      toast.error(msg);
     } finally {
       setRunning(false);
     }
-  }, [rhMode, webappId, workflowId]);
+  }, [
+    id,
+    getRunContext,
+    rhMode,
+    webappId,
+    workflowId,
+    generatedOutputs,
+    nodes,
+    edges,
+    updateNodeData,
+    appendLog,
+    writeOutputImages,
+  ]);
 
   return (
     <BaseNodeShell

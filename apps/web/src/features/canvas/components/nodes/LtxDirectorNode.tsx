@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { Loader2, Play } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { stubBatch3Run } from "../../lib/nodeRun";
 import { BaseNodeShell, type CanvasNodeProps } from "../BaseNode";
 import type { LtxDirectorNodeData } from "@infinite-canvas/canvas-schema";
 
@@ -15,7 +15,7 @@ export function LtxDirectorNode({ id, data, selected }: CanvasNodeProps<LtxDirec
 
   const handleRun = useCallback(() => {
     setRunning(true);
-    stubBatch3Run("LTX Director");
+    toast.info("LTX Director 完整运行将在 Batch 4 实现");
     setTimeout(() => setRunning(false), 800);
   }, []);
 
