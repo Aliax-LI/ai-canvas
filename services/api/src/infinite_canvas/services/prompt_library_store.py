@@ -185,6 +185,16 @@ def save_prompt_libraries(data: dict[str, Any]) -> dict[str, Any]:
     return data
 
 
+def find_prompt_library(data: object, library_id: str = "") -> dict[str, Any] | None:
+    if not isinstance(data, dict):
+        return None
+    libraries = data.get("libraries") if isinstance(data.get("libraries"), list) else []
+    library_id = str(library_id or data.get("active_library_id") or "").strip()
+    return next((item for item in libraries if item.get("id") == library_id), None) or (
+        libraries[0] if libraries else None
+    )
+
+
 def public_prompt_libraries(data: dict[str, Any] | None = None) -> dict[str, Any]:
     data = normalize_prompt_libraries(data or load_prompt_libraries())
     return {

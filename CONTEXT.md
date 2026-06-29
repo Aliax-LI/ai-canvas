@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 4 + 本地素材域`（~43 API paths，pytest **53 passed**）
+**当前阶段**：`M1 — 后端 Batch 4b 资产域 CRUD`（~67 API paths，pytest **62 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~43/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~67/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,36 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — Phase 1 Batch 4b：资产库/提示词库 CRUD + shared_folders
+
+**变更摘要**
+
+- 扩展 `prompt_library_store.py`（`find_prompt_library`）；新增 `routes/prompt_libraries.py`：**10** 个 `/api/prompt-libraries/*` CRUD 端点
+- 扩展 `asset_library_store.py`（`find_*`、`make_asset_library_item`、`remove_asset_library_file`、`unique_asset_category_dir`、`asset_library_media_kind`）；扩展 `routes/asset_libraries.py`：**~15** 个资产库 CRUD（avatar 注册/状态 → **501 尚未迁移**）
+- 新增 `services/shared_folders_store.py`、`routes/shared_folders.py`：**6** 个 `/api/shared-folders/*` 端点；登记根目录为 `app_data_dir()`
+- 新增 `schemas/asset_libraries.py`；`core/paths.py` 增加 `shared_folders_file()`
+- 新增 `tests/api/test_prompt_library_crud.py`、`test_asset_library_crud.py`、`test_shared_folders.py`；OpenAPI **67 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/`、`routes/`、`schemas/asset_libraries.py`、`core/paths.py`
+- `tests/api/test_*_crud.py`、`test_shared_folders.py`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch4b.md`
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **62 passed**
+
+**下一步**
+
+- Batch 5：comfyui / chat 域；或 `workflows/upload`、avatar 注册迁移
+
+**方向对齐**
+
+- shared_folders 路径校验基于桌面数据根 `app_data_dir()`；资产库文件 URL `/assets/library/*` 由既有静态挂载服务
 
 ---
 

@@ -5,10 +5,14 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
+import urllib.parse
 import uuid
+from pathlib import Path
 from typing import Any
 
 from infinite_canvas.core.asset_utils import sanitize_asset_name
+from infinite_canvas.core.output_files import output_file_from_url
 from infinite_canvas.core.paths import asset_library_dir, asset_library_file
 from infinite_canvas.core.websocket import now_ms
 
@@ -144,3 +148,132 @@ def save_asset_library(lib: dict[str, Any]) -> dict[str, Any]:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(lib, f, ensure_ascii=False, indent=2)
     return lib
+
+
+def asset_library_media_kind(path: str, content_type: str = "") -> str:
+    ext = os.path.splitext(path or "")[1].lower()
+    ct = (content_type or "").lower()
+    if ext in {".json", ".zip"}:
+        return "workflow"
+    if ext in {".mp4", ".webm", ".mov", ".m4v", ".avi", ".mkv"} or ct.startswith("video/"):
+        return "video"
+    if ext in {".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac"} or ct.startswith("audio/"):
+        return "audio"
+    return "image"
+
+
+def asset_library_safe_extension(path: str, kind: str) -> str:
+    ext = os.path.splitext(path or "")[1].lower()
+    allowed = {
+        "image": {".png", ".jpg", ".jpeg", ".webp", ".gif"},
+        "video": {".mp4", ".webm", ".mov", ".m4v", ".avi", ".mkv"},
+        "audio": {".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac"},
+        "workflow": {".json", ".zip"},
+    }
+    fallback = {"image": ".png", "video": ".mp4", "audio": ".mp3", "workflow": ".zip"}
+    return ext if ext in allowed.get(kind, allowed["image"]) else fallback.get(kind, ".png")
+
+
+def unique_asset_category_dir(library: dict[str, Any], base_name: str) -> str:
+    """为资产库分组生成唯一、文件系统安全的子文件夹名（library/<dir>/）。"""
+    base = sanitize_asset_name(base_name, "分组").strip(" .") or "分组"
+    lib_dir = asset_library_dir()
+    existing = {
+        str(c.get("dir"))
+        for c in (library.get("categories") or [])
+        if isinstance(c, dict) and c.get("dir")
+    }
+    candidate = base
+    i = 2
+    while candidate in existing or (lib_dir / candidate).exists():
+        candidate = f"{base}_{i}"
+        i += 1
+    return candidate
+
+
+def remove_asset_library_file(item: object) -> None:
+    """删除资产对应的本地文件（仅限 library 副本）。"""
+    try:
+        url = item.get("url") if isinstance(item, dict) else ""
+        path = output_file_from_url(url)
+        if path and path.is_file():
+            path.unlink()
+    except Exception as exc:
+        print(f"删除资产文件失败: {exc}")
+
+
+def make_asset_library_item(src: str | Path, name: str = "", subdir: str = "") -> tuple[str, dict[str, Any]]:
+    src_path = Path(src)
+    kind = asset_library_media_kind(str(src_path))
+    ext = asset_library_safe_extension(str(src_path), kind)
+    safe_name = sanitize_asset_name(name or src_path.name, "asset")
+    if not os.path.splitext(safe_name)[1]:
+        safe_name += ext
+    dest_name = f"lib_{uuid.uuid4().hex[:12]}_{safe_name}"
+    lib_dir = asset_library_dir()
+    subdir = str(subdir or "").strip("/").strip()
+    if subdir:
+        dest_dir = lib_dir / subdir
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest_path = dest_dir / dest_name
+        rel = f"{subdir}/{dest_name}"
+    else:
+        dest_path = lib_dir / dest_name
+        rel = dest_name
+    shutil.copy2(src_path, dest_path)
+    item = {
+        "id": f"asset_{uuid.uuid4().hex[:12]}",
+        "name": os.path.splitext(safe_name)[0][:120],
+        "url": "/assets/library/" + urllib.parse.quote(rel, safe="/"),
+        "kind": kind,
+        "created_at": now_ms(),
+    }
+    return dest_name, item
+
+
+def find_asset_library(lib: dict[str, Any], library_id: str = "") -> dict[str, Any] | None:
+    lib = normalize_asset_library(lib)
+    library_id = str(library_id or lib.get("active_library_id") or "").strip()
+    return next((item for item in lib.get("libraries", []) if item.get("id") == library_id), None) or (
+        (lib.get("libraries") or [None])[0]
+    )
+
+
+def find_asset_category_in_library(
+    lib: dict[str, Any], category_id: str, library_id: str = ""
+) -> dict[str, Any] | None:
+    library = find_asset_library(lib, library_id)
+    if not library:
+        return None
+    for cat in library.get("categories", []):
+        if cat.get("id") == category_id:
+            return cat
+    return None
+
+
+def find_asset_category_with_library(
+    lib: dict[str, Any], category_id: str, library_id: str = ""
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    lib = normalize_asset_library(lib)
+    preferred = str(library_id or "").strip()
+    libraries = lib.get("libraries", []) or []
+    if preferred:
+        libraries = [item for item in libraries if item.get("id") == preferred]
+    for library in libraries:
+        for cat in library.get("categories", []) or []:
+            if cat.get("id") == category_id:
+                return library, cat
+    return None, None
+
+
+def find_asset_item_in_library(
+    lib: dict[str, Any], item_id: str, library_id: str = ""
+) -> dict[str, Any] | None:
+    for library in lib.get("libraries", []):
+        if library_id and library.get("id") != library_id:
+            continue
+        for cat in library.get("categories", []):
+            for item in cat.get("items", []):
+                if item.get("id") == item_id:
+                    return item
+    return None

@@ -853,10 +853,696 @@
         }
       }
     },
+    "/api/asset-library/libraries": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Create Asset Library",
+        "operationId": "create_asset_library_api_asset_library_libraries_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/libraries/{library_id}": {
+      "patch": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Rename Asset Library",
+        "operationId": "rename_asset_library_api_asset_library_libraries__library_id__patch",
+        "parameters": [
+          {
+            "name": "library_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Library Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryRenameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Delete Asset Library",
+        "operationId": "delete_asset_library_api_asset_library_libraries__library_id__delete",
+        "parameters": [
+          {
+            "name": "library_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Library Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/categories": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Create Asset Library Category",
+        "operationId": "create_asset_library_category_api_asset_library_categories_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/categories/{category_id}": {
+      "patch": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Rename Asset Library Category",
+        "operationId": "rename_asset_library_category_api_asset_library_categories__category_id__patch",
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryRenameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Delete Asset Library Category",
+        "operationId": "delete_asset_library_category_api_asset_library_categories__category_id__delete",
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category Id"
+            }
+          },
+          {
+            "name": "library_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Library Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Add Asset Library Item",
+        "operationId": "add_asset_library_item_api_asset_library_items_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/batch": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Batch Add Asset Library Items",
+        "operationId": "batch_add_asset_library_items_api_asset_library_items_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryBatchAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/{item_id}": {
+      "patch": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Rename Asset Library Item",
+        "operationId": "rename_asset_library_item_api_asset_library_items__item_id__patch",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryRenameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Delete Asset Library Item",
+        "operationId": "delete_asset_library_item_api_asset_library_items__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/classify": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Classify Asset Library Items",
+        "operationId": "classify_asset_library_items_api_asset_library_items_classify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryClassifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/{item_id}/register-avatar": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Register Asset Library Avatar",
+        "operationId": "register_asset_library_avatar_api_asset_library_items__item_id__register_avatar_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetAvatarRegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/{item_id}/avatar-status": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Check Asset Library Avatar",
+        "operationId": "check_asset_library_avatar_api_asset_library_items__item_id__avatar_status_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetAvatarRegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/delete": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Batch Delete Asset Library Items",
+        "operationId": "batch_delete_asset_library_items_api_asset_library_items_delete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryBatchDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/move": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Batch Move Asset Library Items",
+        "operationId": "batch_move_asset_library_items_api_asset_library_items_move_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryBatchMoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library/items/crop": {
+      "post": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Batch Crop Asset Library Items",
+        "operationId": "batch_crop_asset_library_items_api_asset_library_items_crop_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetLibraryBatchCropRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/prompt-libraries": {
       "get": {
         "tags": [
-          "asset-libraries"
+          "prompt-libraries"
         ],
         "summary": "Get Prompt Libraries",
         "operationId": "get_prompt_libraries_api_prompt_libraries_get",
@@ -866,6 +1552,649 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Create Prompt Library",
+        "operationId": "create_prompt_library_api_prompt_libraries_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/{library_id}": {
+      "patch": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Rename Prompt Library",
+        "operationId": "rename_prompt_library_api_prompt_libraries__library_id__patch",
+        "parameters": [
+          {
+            "name": "library_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Library Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Delete Prompt Library",
+        "operationId": "delete_prompt_library_api_prompt_libraries__library_id__delete",
+        "parameters": [
+          {
+            "name": "library_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Library Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/items": {
+      "post": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Add Prompt Library Item",
+        "operationId": "add_prompt_library_item_api_prompt_libraries_items_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/items/{item_id}": {
+      "patch": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Update Prompt Library Item",
+        "operationId": "update_prompt_library_item_api_prompt_libraries_items__item_id__patch",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Delete Prompt Library Item",
+        "operationId": "delete_prompt_library_item_api_prompt_libraries_items__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/items/delete": {
+      "post": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Batch Delete Prompt Library Items",
+        "operationId": "batch_delete_prompt_library_items_api_prompt_libraries_items_delete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryBatchDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/categories": {
+      "post": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Add Prompt Library Category",
+        "operationId": "add_prompt_library_category_api_prompt_libraries_categories_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryCategoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries/categories/{category_id}": {
+      "patch": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Rename Prompt Library Category",
+        "operationId": "rename_prompt_library_category_api_prompt_libraries_categories__category_id__patch",
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptLibraryCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "prompt-libraries"
+        ],
+        "summary": "Delete Prompt Library Category",
+        "operationId": "delete_prompt_library_category_api_prompt_libraries_categories__category_id__delete",
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shared-folders": {
+      "get": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "List Shared Folders",
+        "operationId": "list_shared_folders_api_shared_folders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "Register Shared Folder",
+        "operationId": "register_shared_folder_api_shared_folders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharedFolderRegister"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shared-folders/{folder_id}": {
+      "delete": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "Unregister Shared Folder",
+        "operationId": "unregister_shared_folder_api_shared_folders__folder_id__delete",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Folder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shared-folders/{folder_id}/tree": {
+      "get": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "Get Shared Folder Tree",
+        "operationId": "get_shared_folder_tree_api_shared_folders__folder_id__tree_get",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Folder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shared-folders/{folder_id}/file": {
+      "get": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "Get Shared Folder File",
+        "operationId": "get_shared_folder_file_api_shared_folders__folder_id__file_get",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Folder Id"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shared-folders/import": {
+      "post": {
+        "tags": [
+          "shared-folders"
+        ],
+        "summary": "Import Shared Folder Files",
+        "operationId": "import_shared_folder_files_api_shared_folders_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharedFolderImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -2153,6 +3482,246 @@
         "type": "object",
         "title": "ApiProviderPayload"
       },
+      "AssetAvatarRegisterRequest": {
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": ""
+          },
+          "project_name": {
+            "type": "string",
+            "title": "Project Name",
+            "default": "default"
+          },
+          "group_name": {
+            "type": "string",
+            "title": "Group Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetAvatarRegisterRequest"
+      },
+      "AssetLibraryAddRequest": {
+        "properties": {
+          "category_id": {
+            "type": "string",
+            "title": "Category Id",
+            "default": ""
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryAddRequest"
+      },
+      "AssetLibraryBatchAddRequest": {
+        "properties": {
+          "category_id": {
+            "type": "string",
+            "title": "Category Id",
+            "default": ""
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssetLibraryAddRequest"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryBatchAddRequest"
+      },
+      "AssetLibraryBatchCropRequest": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "target_library_id": {
+            "type": "string",
+            "title": "Target Library Id",
+            "default": ""
+          },
+          "target_category_id": {
+            "type": "string",
+            "title": "Target Category Id",
+            "default": ""
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "square"
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryBatchCropRequest"
+      },
+      "AssetLibraryBatchDeleteRequest": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryBatchDeleteRequest"
+      },
+      "AssetLibraryBatchMoveRequest": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "target_library_id": {
+            "type": "string",
+            "title": "Target Library Id",
+            "default": ""
+          },
+          "target_category_id": {
+            "type": "string",
+            "title": "Target Category Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryBatchMoveRequest"
+      },
+      "AssetLibraryCategoryRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "新文件夹"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "image"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryCategoryRequest"
+      },
+      "AssetLibraryClassifyRequest": {
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryClassifyRequest"
+      },
+      "AssetLibraryRenameRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryRenameRequest"
+      },
+      "AssetLibraryRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "资产库"
+          }
+        },
+        "type": "object",
+        "title": "AssetLibraryRequest"
+      },
       "Body_upload_image_api_upload_post": {
         "properties": {
           "files": {
@@ -2708,6 +4277,131 @@
         },
         "type": "object",
         "title": "ProjectUpdateRequest"
+      },
+      "PromptLibraryBatchDeleteRequest": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          }
+        },
+        "type": "object",
+        "title": "PromptLibraryBatchDeleteRequest"
+      },
+      "PromptLibraryCategoryRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "新分组"
+          },
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "PromptLibraryCategoryRequest"
+      },
+      "PromptLibraryItemRequest": {
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "item_id": {
+            "type": "string",
+            "title": "Item Id",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "提示词"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "default": "custom"
+          },
+          "positive": {
+            "type": "string",
+            "title": "Positive",
+            "default": ""
+          },
+          "negative": {
+            "type": "string",
+            "title": "Negative",
+            "default": ""
+          },
+          "scene": {
+            "type": "string",
+            "title": "Scene",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "PromptLibraryItemRequest"
+      },
+      "PromptLibraryRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": "提示词库"
+          }
+        },
+        "type": "object",
+        "title": "PromptLibraryRequest"
+      },
+      "SharedFolderImport": {
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "title": "Library Id",
+            "default": ""
+          },
+          "category_id": {
+            "type": "string",
+            "title": "Category Id",
+            "default": ""
+          },
+          "folder_id": {
+            "type": "string",
+            "title": "Folder Id",
+            "default": ""
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Paths"
+          }
+        },
+        "type": "object",
+        "title": "SharedFolderImport"
+      },
+      "SharedFolderRegister": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "SharedFolderRegister"
       },
       "TestConnectionPayload": {
         "properties": {

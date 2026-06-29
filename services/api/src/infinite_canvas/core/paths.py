@@ -90,6 +90,10 @@ def prompt_libraries_file() -> Path:
     return app_data_dir() / "data" / "prompt_libraries.json"
 
 
+def shared_folders_file() -> Path:
+    return app_data_dir() / "data" / "shared_folders.json"
+
+
 def app_assets_dir() -> Path:
     """User-writable assets root served at /assets."""
     return app_data_dir() / "assets"
