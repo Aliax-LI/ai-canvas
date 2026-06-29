@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 5 ComfyUI 与工作流域`（~77 API paths，pytest **70 passed**）
+**当前阶段**：`M1 — 后端 Batch 6 RunningHub 与即梦 jimeng`（~93 API paths，pytest **76 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~77/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~97/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,39 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — Phase 1 Batch 6：RunningHub + 即梦 jimeng
+
+**变更摘要**
+
+- 新增 `services/runninghub.py`、`routes/runninghub.py`、`schemas/runninghub.py`（**12** 端点：app-info、submit、workflow CRUD、query、upload-asset）
+- 新增 `services/jimeng.py`、`routes/jimeng.py`、`schemas/jimeng.py`（**8** 端点：status、credit、login/logout、help、query-media）；保留 WSL/原生平台分支与 `JimengPendingError` → 202 handler
+- 扩展 `core/paths.py`（`runninghub_workflow_store_file()`）；`provider_probe` 改从 `jimeng` 模块导入 status
+- 新增 `tests/api/test_runninghub.py`、`test_jimeng.py`；OpenAPI **93 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/runninghub.py`、`jimeng.py`
+- `services/api/src/infinite_canvas/routes/runninghub.py`、`jimeng.py`、`routes/__init__.py`
+- `services/api/src/infinite_canvas/schemas/runninghub.py`、`jimeng.py`
+- `services/api/src/infinite_canvas/app.py`、`core/paths.py`
+- `tests/api/test_runninghub.py`、`test_jimeng.py`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch6.md`
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **76 passed**
+- [x] `uv run python scripts/export_openapi_baseline.py` → **93 paths**
+
+**下一步**
+
+- Batch 7：chat 域、canvas-image-tasks、或火山 volcengine 剩余端点
+
+**方向对齐**
+
+- strict parity；RunningHub 工作流 store 与 provider `rh_workflows` 同步逻辑与 legacy 一致；即梦 CLI subprocess 行为未改 API 契约
 
 ---
 

@@ -2699,6 +2699,603 @@
         }
       }
     },
+    "/api/runninghub/app-info": {
+      "get": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub App Info",
+        "operationId": "runninghub_app_info_api_runninghub_app_info_get",
+        "parameters": [
+          {
+            "name": "webappId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Webappid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/submit": {
+      "post": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub Submit",
+        "operationId": "runninghub_submit_api_runninghub_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunningHubSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/workflow-submit": {
+      "post": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub Workflow Submit",
+        "operationId": "runninghub_workflow_submit_api_runninghub_workflow_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunningHubWorkflowSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/workflow-info": {
+      "get": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub Workflow Info",
+        "operationId": "runninghub_workflow_info_api_runninghub_workflow_info_get",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Workflowid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/workflows": {
+      "get": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "List Runninghub Workflows",
+        "operationId": "list_runninghub_workflows_api_runninghub_workflows_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/workflows/{workflow_id}": {
+      "get": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Get Runninghub Workflow",
+        "operationId": "get_runninghub_workflow_api_runninghub_workflows__workflow_id__get",
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Workflow Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Save Runninghub Workflow",
+        "operationId": "save_runninghub_workflow_api_runninghub_workflows__workflow_id__put",
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Workflow Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunningHubWorkflowConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Delete Runninghub Workflow",
+        "operationId": "delete_runninghub_workflow_api_runninghub_workflows__workflow_id__delete",
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Workflow Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/workflows/fetch": {
+      "post": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Fetch Runninghub Workflow",
+        "operationId": "fetch_runninghub_workflow_api_runninghub_workflows_fetch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunningHubWorkflowConfig"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/query": {
+      "get": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub Query",
+        "operationId": "runninghub_query_api_runninghub_query_get",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Taskid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runninghub/upload-asset": {
+      "post": {
+        "tags": [
+          "runninghub"
+        ],
+        "summary": "Runninghub Upload Asset",
+        "operationId": "runninghub_upload_asset_api_runninghub_upload_asset_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunningHubUploadAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/status": {
+      "get": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Status",
+        "operationId": "jimeng_status_api_jimeng_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/credit": {
+      "get": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Credit",
+        "operationId": "jimeng_credit_api_jimeng_credit_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/logout": {
+      "post": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Logout",
+        "operationId": "jimeng_logout_api_jimeng_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/login/start": {
+      "post": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Login Start",
+        "operationId": "jimeng_login_start_api_jimeng_login_start_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/login/status": {
+      "get": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Login Status",
+        "operationId": "jimeng_login_status_api_jimeng_login_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/help": {
+      "post": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Help",
+        "operationId": "jimeng_help_api_jimeng_help_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JimengHelpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jimeng/query-media": {
+      "post": {
+        "tags": [
+          "jimeng"
+        ],
+        "summary": "Jimeng Query Media",
+        "operationId": "jimeng_query_media_api_jimeng_query_media_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JimengQueryMediaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/canvases": {
       "get": {
         "tags": [
@@ -4586,6 +5183,33 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "JimengHelpRequest": {
+        "properties": {
+          "command": {
+            "type": "string",
+            "title": "Command",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "JimengHelpRequest"
+      },
+      "JimengQueryMediaRequest": {
+        "properties": {
+          "submit_id": {
+            "type": "string",
+            "title": "Submit Id",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "image"
+          }
+        },
+        "type": "object",
+        "title": "JimengQueryMediaRequest"
+      },
       "LocalAssetCaptionRequest": {
         "properties": {
           "names": {
@@ -4938,6 +5562,213 @@
         },
         "type": "object",
         "title": "PromptLibraryRequest"
+      },
+      "RunningHubSubmitRequest": {
+        "properties": {
+          "webappId": {
+            "type": "string",
+            "title": "Webappid",
+            "default": ""
+          },
+          "nodeInfoList": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Nodeinfolist",
+            "default": []
+          },
+          "instanceType": {
+            "type": "string",
+            "title": "Instancetype",
+            "default": ""
+          },
+          "useWallet": {
+            "type": "boolean",
+            "title": "Usewallet",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "RunningHubSubmitRequest"
+      },
+      "RunningHubUploadAssetRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "useWallet": {
+            "type": "boolean",
+            "title": "Usewallet",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "RunningHubUploadAssetRequest"
+      },
+      "RunningHubWorkflowConfig": {
+        "properties": {
+          "workflowId": {
+            "type": "string",
+            "title": "Workflowid",
+            "default": ""
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": ""
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/RunningHubWorkflowConfigField"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "workflowJson": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Workflowjson"
+          },
+          "optionalImageMode": {
+            "type": "string",
+            "title": "Optionalimagemode",
+            "default": "prune-workflow"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw"
+          }
+        },
+        "type": "object",
+        "title": "RunningHubWorkflowConfig"
+      },
+      "RunningHubWorkflowConfigField": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "default": ""
+          },
+          "nodeId": {
+            "type": "string",
+            "title": "Nodeid",
+            "default": ""
+          },
+          "fieldName": {
+            "type": "string",
+            "title": "Fieldname",
+            "default": ""
+          },
+          "fieldValue": {
+            "type": "string",
+            "title": "Fieldvalue",
+            "default": ""
+          },
+          "fieldType": {
+            "type": "string",
+            "title": "Fieldtype",
+            "default": "TEXT"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "default": ""
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "sourceFromUpstream": {
+            "type": "boolean",
+            "title": "Sourcefromupstream",
+            "default": true
+          },
+          "group": {
+            "type": "string",
+            "title": "Group",
+            "default": ""
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "random_enabled": {
+            "type": "boolean",
+            "title": "Random Enabled",
+            "default": false
+          },
+          "min": {
+            "title": "Min",
+            "default": ""
+          },
+          "max": {
+            "title": "Max",
+            "default": ""
+          },
+          "step": {
+            "title": "Step",
+            "default": ""
+          },
+          "imageOrder": {
+            "type": "integer",
+            "title": "Imageorder",
+            "default": 0
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "RunningHubWorkflowConfigField"
+      },
+      "RunningHubWorkflowSubmitRequest": {
+        "properties": {
+          "workflowId": {
+            "type": "string",
+            "title": "Workflowid",
+            "default": ""
+          },
+          "nodeInfoList": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Nodeinfolist",
+            "default": []
+          },
+          "workflow": {
+            "title": "Workflow"
+          },
+          "useWallet": {
+            "type": "boolean",
+            "title": "Usewallet",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "RunningHubWorkflowSubmitRequest"
       },
       "SharedFolderImport": {
         "properties": {

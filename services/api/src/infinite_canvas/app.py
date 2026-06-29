@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -21,6 +21,7 @@ from infinite_canvas.core.paths import (
 )
 from infinite_canvas.routes import api_router
 from infinite_canvas.services.data_migration import run_startup_migration
+from infinite_canvas.services.jimeng import JimengPendingError, jimeng_pending_payload
 
 
 def create_app() -> FastAPI:
@@ -38,6 +39,10 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router)
+
+    @app.exception_handler(JimengPendingError)
+    async def jimeng_pending_exception_handler(request: Request, exc: JimengPendingError):
+        return JSONResponse(status_code=202, content=jimeng_pending_payload(exc))
 
     @app.on_event("startup")
     async def _on_startup() -> None:

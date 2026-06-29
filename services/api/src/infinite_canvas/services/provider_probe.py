@@ -29,9 +29,7 @@ from infinite_canvas.services import provider_store
 STATIC_RUNNINGHUB_MODEL_REGISTRY_FILE = static_runninghub_dir() / "models_registry.json"
 
 
-async def jimeng_status() -> dict[str, Any]:
-    """Minimal stub until jimeng module is migrated."""
-    return {"installed": False, "logged_in": False, "message": "即梦 CLI 模块尚未迁移"}
+from infinite_canvas.services.jimeng import jimeng_status
 
 
 def looks_like_html_response(text: str) -> bool:

@@ -135,6 +135,11 @@ def static_runninghub_dir() -> Path:
     return legacy_static_dir() / "runninghub"
 
 
+def runninghub_workflow_store_file() -> Path:
+    """User RunningHub workflow configs (legacy data/runninghub_workflows.json)."""
+    return app_data_dir() / "data" / "runninghub_workflows.json"
+
+
 def ensure_app_data_dirs() -> None:
     root = app_data_dir()
     for sub in ("data", "assets", "config"):
