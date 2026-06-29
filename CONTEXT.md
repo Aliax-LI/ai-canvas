@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M7 — Studio 工具页迁移完成`（5 个 tools 核心生成 + 历史；双画布待做）
+**当前阶段**：`M8 — 智能画布迁移完成`（卡片 CRUD + 自动保存；无限画布待做）
 
 **当前里程碑进度**：
 
@@ -31,7 +31,8 @@
 | M5 设置页 | ✅ 完成 | API / ComfyUI 设置 |
 | M6 列表/素材/对话 | ✅ 完成 | 画布列表、素材库、GPT 对话 |
 | M7 工具页 | ✅ 完成 | zimage / enhance / klein / online / angle |
-| M8–M9 双画布 + Tauri | ⚪ 未开始 | 无限画布、智能画布、桌面端 |
+| M8 智能画布 | ✅ 完成 | `/smart/:id` 卡片布局、拖拽、CRUD、自动保存 |
+| M9 无限画布 + Tauri | ⚪ 未开始 | `/canvas/:id`、桌面端 |
 
 ---
 
@@ -51,7 +52,7 @@
 | index.html | `/` | 🟡 路由占位 |
 | canvas-list.html | `/canvases` | 🟡 核心 CRUD |
 | canvas.html | `/canvas/:id` | 🟡 Shell + 占位 |
-| smart-canvas.html | `/smart/:id` | 🟡 路由占位 |
+| smart-canvas.html | `/smart/:id` | 🟡 卡片 CRUD + 自动保存 |
 | asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
 | comfyui-settings.html | `/settings/comfyui` | 🟡 实例+工作流配置 |
@@ -72,6 +73,39 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M8 前端：智能画布 `/smart/:id`
+
+**变更摘要**
+
+- **`/smart/:id`**：全屏 `SmartCanvasShell`；加载/自动保存 `GET/PUT /api/canvases/:id`
+- 四类卡片：`smart-image` / `smart-prompt` / `smart-group` / `smart-loop`；创建菜单、拖拽移动、删除
+- 视口平移缩放；媒体上传 `POST /api/ai/upload`；分组导出 API 封装
+- E2E：`tests/e2e/m8-smart-canvas.spec.ts`
+
+**影响路径**
+
+- `apps/web/src/features/smart-canvas/**`
+- `apps/web/src/components/shell/SmartCanvasShell.tsx`
+- `apps/web/src/app/router.tsx`
+- `tests/e2e/m8-smart-canvas.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m8-smart-canvas.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **9 passed**
+
+**下一步**
+
+- M9 无限画布 `/canvas/:id`（@xyflow/react + 节点注册表）
+- Tauri 2 桌面打包
+
+**方向对齐**
+
+- 14 页中 13 页已有核心 UI；无限画布为 v1 最后大块
 
 ---
 
@@ -100,12 +134,11 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 **下一步**
 
-- M8 无限画布 `/canvas/:id`（@xyflow/react + 节点注册表）
-- M9 智能画布 `/smart/:id`
+- M9 无限画布 `/canvas/:id`（@xyflow/react + 节点注册表）
 
 **方向对齐**
 
-- 14 页中 12 页已有核心 UI；剩余双画布为 v1 最大块
+- 14 页中 13 页已有核心 UI；无限画布为 v1 最后大块
 
 ---
 

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AppProviders } from "@/app/AppProviders";
 import { ProductShell } from "@/components/shell/ProductShell";
+import { SmartCanvasShell } from "@/components/shell/SmartCanvasShell";
 import { CanvasShell } from "@/components/shell/CanvasShell";
 import { StudioHomePage } from "@/features/studio/StudioHomePage";
 import { CanvasListPage } from "@/features/canvas/CanvasListPage";
@@ -27,7 +28,6 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <StudioHomePage /> },
           { path: "canvases", element: <CanvasListPage /> },
-          { path: "smart/:id", element: <SmartCanvasPage /> },
           { path: "assets", element: <AssetsPage /> },
           { path: "settings/api", element: <ApiSettingsPage /> },
           { path: "settings/comfyui", element: <ComfyuiSettingsPage /> },
@@ -43,6 +43,11 @@ export const router = createBrowserRouter([
         path: "canvas/:id",
         element: <CanvasShell />,
         children: [{ index: true, element: <CanvasEditorPage /> }],
+      },
+      {
+        path: "smart/:id",
+        element: <SmartCanvasShell />,
+        children: [{ index: true, element: <SmartCanvasPage /> }],
       },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
