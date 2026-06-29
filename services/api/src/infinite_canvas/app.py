@@ -7,18 +7,27 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from infinite_canvas import __version__
+from infinite_canvas.core.env_file import ensure_runtime_config_files, load_env_file
+from infinite_canvas.core.database import init_database, use_sqlite_storage
 from infinite_canvas.core.websocket import websocket_stats_handler
 from infinite_canvas.core.paths import (
+    app_assets_dir,
     ensure_app_data_dirs,
     legacy_assets_dir,
     legacy_output_dir,
     legacy_static_dir,
 )
 from infinite_canvas.routes import api_router
+from infinite_canvas.services.data_migration import run_startup_migration
 
 
 def create_app() -> FastAPI:
     ensure_app_data_dirs()
+    ensure_runtime_config_files()
+    load_env_file()
+    if use_sqlite_storage():
+        init_database()
+        run_startup_migration()
 
     app = FastAPI(
         title="Infinite Canvas",
@@ -36,9 +45,13 @@ def create_app() -> FastAPI:
     if static_dir.is_dir():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-        assets_dir = legacy_assets_dir()
+        assets_dir = app_assets_dir()
         if assets_dir.is_dir():
             app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+        else:
+            legacy_assets = legacy_assets_dir()
+            if legacy_assets.is_dir():
+                app.mount("/assets", StaticFiles(directory=str(legacy_assets)), name="assets")
 
         output_dir = legacy_output_dir()
         if output_dir.is_dir():

@@ -9,6 +9,11 @@ from typing import Any
 
 from fastapi import HTTPException
 
+from infinite_canvas.core.database import (
+    load_projects_rows,
+    save_projects_batch,
+    use_sqlite_storage,
+)
 from infinite_canvas.core.paths import legacy_projects_file, projects_file
 from infinite_canvas.core.websocket import now_ms
 from infinite_canvas.services import canvas_store
@@ -46,6 +51,8 @@ def projects_file_for_write() -> Path:
 
 
 def load_projects() -> list[dict[str, Any]]:
+    if use_sqlite_storage():
+        return load_projects_rows()
     path = projects_file_for_read()
     if path is None:
         return []
@@ -61,6 +68,10 @@ def load_projects() -> list[dict[str, Any]]:
 
 
 def save_projects(projects: list[dict[str, Any]]) -> None:
+    if use_sqlite_storage():
+        with PROJECTS_LOCK:
+            save_projects_batch(projects)
+        return
     write_path = projects_file_for_write()
     write_path.parent.mkdir(parents=True, exist_ok=True)
     with PROJECTS_LOCK:

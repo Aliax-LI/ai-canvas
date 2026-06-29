@@ -13,8 +13,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 LEGACY_BASELINE = REPO_ROOT / "tests" / "fixtures" / "openapi_legacy_baseline.json"
 PHASE0_BASELINE = REPO_ROOT / "tests" / "fixtures" / "openapi_baseline.json"
 
-# Phase 0 scaffold routes not present in legacy main.py OpenAPI (migration additions).
-PHASE0_ONLY_PATHS = frozenset({"/health"})
+# Routes not present in legacy main.py OpenAPI (migration / desktop additions).
+PHASE0_ONLY_PATHS = frozenset({
+    "/health",
+    "/api/data/store",
+    "/api/data/migrate-from-files",
+})
 
 
 def _load_paths(fixture: Path) -> set[str]:

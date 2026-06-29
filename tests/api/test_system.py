@@ -16,6 +16,8 @@ async def test_app_info(client):
     assert response.status_code == 200
     body = response.json()
     assert body["name"] == "infinite-canvas"
-    assert body["phase"] == "0-scaffold"
+    assert body["phase"] == "1-backend"
+    assert body["storage"] in ("sqlite", "files")
+    assert "database_path" in body
     assert "coding_root" in body
     assert "legacy_static_present" in body

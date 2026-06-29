@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M1 — 后端 Batch 2 完成`（Phase 0 脚手架 + Batch 1 history/ws + Batch 2 media/upload/canvases/projects，OpenAPI baseline **20 paths**）
+**当前阶段**：`M1 — 后端 Batch 4 + 本地素材域`（~43 API paths，pytest **53 passed**）
 
 **当前里程碑进度**：
 
@@ -26,7 +26,7 @@
 |--------|------|------|
 | M0 基线 / 文档 | ✅ 完成 | `.gitignore`、`AGENTS.md`、`CONTEXT.md`、`DESIGN.md`、设计规格 |
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
-| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~20/147 路由（history、ws、media、canvases/projects）；pytest **33 passed** |
+| M2–M3 后端 100% parity | 🟡 进行中 | 已迁移 ~43/147 路由；**SQLite** 默认存储画布/项目/对话/API 平台配置 |
 | M4–M7 前端 React | ⚪ 未开始 | 14 页 + 双画布 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
@@ -67,6 +67,128 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — Phase 1 Batch 4：local_assets + 资产库/提示词库基础
+
+**变更摘要**
+
+- 新增 `services/local_assets.py`、`routes/local_assets.py`、`schemas/local_assets.py`：**11** 个 `/api/local-assets/*` 端点（upload/import/list/folders/items/delete/move/caption/classify）
+- 新增 `services/asset_ai.py`（caption/classify 上游 vision 调用）、`core/security.py`（同源校验）、`core/asset_utils.py`（分类 JSON 规范化）
+- 扩展 `core/paths.py`：`local_upload_dir()`、`asset_library_*`、`prompt_libraries_file()`；`app.py` 优先挂载 `{app_data}/assets`
+- 新增 `services/asset_library_store.py`、`services/prompt_library_store.py`、`routes/asset_libraries.py`：`GET /api/asset-library`、`GET /api/prompt-libraries`
+- 新增 `tests/api/test_local_assets.py`（5 条）；OpenAPI **43 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/core/`、`services/`、`routes/`、`schemas/local_assets.py`
+- `tests/api/test_local_assets.py`、`tests/fixtures/openapi_baseline.json`
+- `docs/superpowers/plans/2026-06-29-phase1-backend-batch4.md`
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **53 passed**
+
+**下一步**
+
+- Batch 4 剩余：asset_library / prompt_libraries CRUD、shared_folders；或 Batch 5 comfyui/chat 域
+
+**方向对齐**
+
+- 本地素材文件存 `{app_data}/assets/uploads`；资产库/提示词库 JSON 存 `{app_data}/data/`；HTTP 契约与 legacy 一致
+
+---
+
+### 2026-06-29 — SQLite 本地数据库存储（画布 / 配置 / 对话）
+
+**变更摘要**
+
+- 新增 `core/database.py`：SQLite（WAL）单文件 `{app_data}/infinite-canvas.db`，表 `canvases` / `projects` / `conversations` / `app_settings`
+- 新增 `services/data_migration.py`：启动时自动从 JSON 文件导入；`POST /api/data/migrate-from-files` 手动/强制迁移
+- 新增 `routes/data_store.py`：`GET /api/data/store`（路径、统计、配置键列表）
+- 接入 `canvas_store` / `projects` / `conversations` / `provider_store`：默认 **sqlite** 模式；`INFINITE_CANVAS_STORAGE=files` 回退纯 JSON
+- API 密钥仍存 `config/.env`；API 平台列表存 DB `app_settings.api_providers`
+- 新增 `tests/api/test_database_storage.py`（6 条）；OpenAPI **32 paths**
+
+**影响路径**
+
+- `core/database.py`、`services/data_migration.py`、`routes/data_store.py`
+- `services/canvas_store.py`、`projects.py`、`conversations.py`、`provider_store.py`
+- `app.py`、`routes/system.py`（app-info 含 storage/database_path）
+
+**验证项**
+
+- [x] `uv run pytest tests/api -v` → **48 passed**
+
+**下一步**
+
+- Batch 4 assets 域迁移；Tauri sidecar 使用 `--data-dir` 指向同一 DB 文件
+
+**方向对齐**
+
+- 桌面端单文件 DB 便于备份/迁移；HTTP API 契约不变；兼容 legacy JSON 一次性导入
+
+---
+
+### 2026-06-29 — Phase 1 Task 7：Providers + Config + Models 迁移
+
+**变更摘要**
+
+- 新增 `core/env_file.py`（`load_env_file` / `update_env_values`，路径 `{app_data}/config/.env`）
+- 新增 `core/provider_constants.py`、`core/runtime_config.py`（`reload_env_globals` 模块级模型列表同步）
+- 新增 `services/provider_store.py`（load/save/normalize/public/merge 默认平台）
+- 新增 `services/provider_probe.py`（test-connection、probe-async、fetch-models、RunningHub 注册表兜底）
+- 新增 `schemas/provider.py`、`routes/providers.py`（9 端点：config/models/providers/token/test/probe/fetch）
+- 扩展 `core/paths.py`：`api_env_file()`、`api_providers_file()`、`conversations_dir()`、`global_config_file()`
+- 新增 `tests/api/test_providers.py`（6 条）；`openapi_baseline.json` 更新至 **30 paths**
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/core/`、`services/`、`routes/providers.py`、`tests/api/test_providers.py`
+- `tests/fixtures/openapi_baseline.json`
+
+**验证项**
+
+- `uv run pytest tests/api -v` → **42 passed**
+- `GET /api/config`、`PUT /api/providers`、`GET /api/config/token`、jimeng test-connection stub
+
+**下一步**
+
+- Phase 1 Batch 4：assets / comfyui / chat 等域
+
+**方向对齐**
+
+- env 与 providers JSON 路径对齐 design spec §5.3；API 契约与 legacy 一致；即梦 full module 留后续批次
+
+---
+
+### 2026-06-29 — Phase 1 Task 6：Conversations CRUD 迁移
+
+**变更摘要**
+
+- 新增 `services/conversations.py`：`safe_user_id`、`X-User-Id` header、按用户目录 JSON 存储
+- 新增 `schemas/conversation.py`、`routes/conversations.py`（4 端点：list/create/get/delete）
+- 数据目录：`{app_data_dir()}/data/conversations/{user_id}/*.json`
+- 新增 `tests/api/test_conversations.py`（3 条：空列表、CRUD、用户隔离）
+
+**影响路径**
+
+- `services/api/src/infinite_canvas/services/conversations.py`
+- `routes/conversations.py`、`schemas/conversation.py`、`core/paths.py`
+- `tests/api/test_conversations.py`
+
+**验证项**
+
+- `uv run pytest tests/api/test_conversations.py -v` → 3 passed
+
+**下一步**
+
+- Task 7 providers/config（同 Batch 3）
+
+**方向对齐**
+
+- 对话存储与 legacy `CONVERSATION_DIR` 行为一致；v1 parity，无新特性
 
 ---
 

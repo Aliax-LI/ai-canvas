@@ -8,8 +8,10 @@ from fastapi import APIRouter
 
 from infinite_canvas import __version__
 from infinite_canvas.core.config import get_settings
+from infinite_canvas.core.database import use_sqlite_storage
 from infinite_canvas.core.paths import (
     coding_root,
+    database_file,
     legacy_static_dir,
     repo_root,
 )
@@ -30,7 +32,9 @@ def app_info():
     return {
         "name": "infinite-canvas",
         "version": __version__,
-        "phase": "0-scaffold",
+        "phase": "1-backend",
+        "storage": "sqlite" if use_sqlite_storage() else "files",
+        "database_path": str(database_file()),
         "repo_root": str(repo_root()),
         "coding_root": str(coding),
         "coding_present": coding.is_dir(),

@@ -11,6 +11,15 @@ from typing import Any
 
 from fastapi import HTTPException
 
+from infinite_canvas.core.database import (
+    delete_canvas_row,
+    get_canvas,
+    list_canvas_rows,
+    move_canvases_project as db_move_canvases_project,
+    purge_expired_trash,
+    upsert_canvas,
+    use_sqlite_storage,
+)
 from infinite_canvas.core.paths import canvases_dir, legacy_canvases_dir
 from infinite_canvas.core.websocket import manager, now_ms
 
@@ -73,6 +82,10 @@ def normalize_canvas_color(value: Any) -> str:
 
 def save_canvas(canvas: dict[str, Any]) -> None:
     canvas["updated_at"] = now_ms()
+    if use_sqlite_storage():
+        with CANVAS_LOCK:
+            upsert_canvas(canvas)
+        return
     path = canvas_path(canvas["id"])
     path.parent.mkdir(parents=True, exist_ok=True)
     with CANVAS_LOCK:
@@ -133,17 +146,18 @@ def new_canvas(
 
 
 def load_canvas(canvas_id: str) -> dict[str, Any]:
-    path = canvas_path(canvas_id)
-    if not path.is_file():
-        raise HTTPException(status_code=404, detail="画布不存在")
-    with open(path, encoding="utf-8") as f:
-        canvas = json.load(f)
+    canvas = load_canvas_any(canvas_id)
     if canvas.get("deleted_at"):
         raise HTTPException(status_code=404, detail="画布已在回收站")
     return canvas
 
 
 def load_canvas_any(canvas_id: str) -> dict[str, Any]:
+    if use_sqlite_storage():
+        canvas = get_canvas(canvas_id)
+        if canvas is None:
+            raise HTTPException(status_code=404, detail="画布不存在")
+        return canvas
     path = canvas_path(canvas_id)
     if not path.is_file():
         raise HTTPException(status_code=404, detail="画布不存在")
@@ -153,6 +167,9 @@ def load_canvas_any(canvas_id: str) -> dict[str, Any]:
 
 def cleanup_expired_canvas_trash() -> None:
     cutoff = now_ms() - CANVAS_TRASH_RETENTION_MS
+    if use_sqlite_storage():
+        purge_expired_trash(cutoff)
+        return
     directory = canvases_dir_for_read()
     if not directory.is_dir():
         return
@@ -172,6 +189,9 @@ def cleanup_expired_canvas_trash() -> None:
 
 def iter_canvas_records(include_deleted: bool = False) -> list[dict[str, Any]]:
     cleanup_expired_canvas_trash()
+    if use_sqlite_storage():
+        docs = list_canvas_rows(include_deleted=include_deleted)
+        return [canvas_record(doc) for doc in docs]
     records: list[dict[str, Any]] = []
     directory = canvases_dir_for_read()
     if not directory.is_dir():
@@ -208,6 +228,8 @@ def list_deleted_canvases() -> list[dict[str, Any]]:
 
 
 def move_canvases_to_project(from_project: str, to_project: str) -> int:
+    if use_sqlite_storage():
+        return db_move_canvases_project(from_project, to_project)
     moved = 0
     directory = canvases_dir_for_read()
     if not directory.is_dir():
@@ -247,10 +269,8 @@ def update_canvas_meta(canvas_id: str, updates: dict[str, Any]) -> dict[str, Any
         canvas["board_x"] = float(updates["board_x"])
     if updates.get("board_y") is not None:
         canvas["board_y"] = float(updates["board_y"])
-    path = canvas_path(canvas["id"])
-    with CANVAS_LOCK:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(canvas, f, ensure_ascii=False, indent=2)
+    canvas["updated_at"] = now_ms()
+    save_canvas(canvas)
     return canvas_record(canvas)
 
 
@@ -303,6 +323,9 @@ def restore_canvas(canvas_id: str) -> dict[str, Any]:
 
 
 def purge_canvas(canvas_id: str) -> dict[str, bool]:
+    if use_sqlite_storage():
+        delete_canvas_row(canvas_id)
+        return {"ok": True}
     path = canvas_path(canvas_id)
     if path.is_file():
         path.unlink()

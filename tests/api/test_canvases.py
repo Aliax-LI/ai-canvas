@@ -167,7 +167,7 @@ async def test_canvas_not_found(client):
 
 
 @pytest.mark.asyncio
-async def test_legacy_fallback_read(client, data_dir, monkeypatch):
+async def test_legacy_fallback_read(data_dir, monkeypatch):
     legacy_root = data_dir / "legacy"
     canvases = legacy_root / "data" / "canvases"
     canvases.mkdir(parents=True)
@@ -188,7 +188,12 @@ async def test_legacy_fallback_read(client, data_dir, monkeypatch):
     )
     monkeypatch.setenv("INFINITE_CANVAS_CODING_ROOT", str(legacy_root))
 
-    response = await client.get("/api/canvases")
-    assert response.status_code == 200
-    titles = [c["title"] for c in response.json()["canvases"]]
-    assert "Legacy 画布" in titles
+    transport = ASGITransport(app=create_app())
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        migrate = await client.post("/api/data/migrate-from-files", json={"force": True})
+        assert migrate.status_code == 200
+
+        response = await client.get("/api/canvases")
+        assert response.status_code == 200
+        titles = [c["title"] for c in response.json()["canvases"]]
+        assert "Legacy 画布" in titles

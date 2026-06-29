@@ -429,6 +429,449 @@
         }
       }
     },
+    "/api/local-assets/upload": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Upload Local Assets",
+        "operationId": "upload_local_assets_api_local_assets_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_local_assets_api_local_assets_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/import-urls": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Import Local Assets From Urls",
+        "operationId": "import_local_assets_from_urls_api_local_assets_import_urls_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetUrlImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets": {
+      "get": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "List Local Assets",
+        "operationId": "list_local_assets_api_local_assets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/folders": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Create Local Asset Folder",
+        "operationId": "create_local_asset_folder_api_local_assets_folders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetFolderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Rename Local Asset Folder",
+        "operationId": "rename_local_asset_folder_api_local_assets_folders_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetFolderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/items": {
+      "patch": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Rename Local Asset Item",
+        "operationId": "rename_local_asset_item_api_local_assets_items_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetRenameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/delete": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Delete Local Assets",
+        "operationId": "delete_local_assets_api_local_assets_delete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/move": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Move Local Assets",
+        "operationId": "move_local_assets_api_local_assets_move_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetMoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/caption": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Caption Local Assets",
+        "operationId": "caption_local_assets_api_local_assets_caption_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetCaptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Save Local Asset Caption",
+        "operationId": "save_local_asset_caption_api_local_assets_caption_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetCaptionSaveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/local-assets/classify": {
+      "post": {
+        "tags": [
+          "local-assets"
+        ],
+        "summary": "Classify Local Assets",
+        "operationId": "classify_local_assets_api_local_assets_classify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalAssetClassifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/asset-library": {
+      "get": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Get Asset Library",
+        "operationId": "get_asset_library_api_asset_library_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompt-libraries": {
+      "get": {
+        "tags": [
+          "asset-libraries"
+        ],
+        "summary": "Get Prompt Libraries",
+        "operationId": "get_prompt_libraries_api_prompt_libraries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/canvases": {
       "get": {
         "tags": [
@@ -982,6 +1425,526 @@
         }
       }
     },
+    "/api/conversations": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Conversations",
+        "operationId": "conversations_api_conversations_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Create Conversation",
+        "operationId": "create_conversation_api_conversations_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Get Conversation",
+        "operationId": "get_conversation_api_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Delete Conversation",
+        "operationId": "delete_conversation_api_conversations__conversation_id__delete",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Ai Config",
+        "operationId": "ai_config_api_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Ai Models",
+        "operationId": "ai_models_api_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Api Providers",
+        "operationId": "api_providers_api_providers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Save Providers",
+        "operationId": "save_providers_api_providers_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/ApiProviderPayload"
+                },
+                "type": "array",
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/token": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Get Global Token",
+        "operationId": "get_global_token_api_config_token_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/test-connection": {
+      "post": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Test Provider Connection",
+        "operationId": "test_provider_connection_api_providers_test_connection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestConnectionPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/probe-async": {
+      "post": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Probe Async Endpoint",
+        "operationId": "probe_async_endpoint_api_providers_probe_async_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestConnectionPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/fetch-models": {
+      "post": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Fetch Upstream Models From Payload",
+        "operationId": "fetch_upstream_models_from_payload_api_providers_fetch_models_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestConnectionPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/{provider_id}/fetch-models": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Fetch Upstream Models",
+        "operationId": "fetch_upstream_models_api_providers__provider_id__fetch_models_get",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Provider Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/store": {
+      "get": {
+        "tags": [
+          "data-store"
+        ],
+        "summary": "Data Store Info",
+        "operationId": "data_store_info_api_data_store_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/migrate-from-files": {
+      "post": {
+        "tags": [
+          "data-store"
+        ],
+        "summary": "Migrate From Files",
+        "operationId": "migrate_from_files_api_data_migrate_from_files_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Index",
@@ -1001,6 +1964,195 @@
   },
   "components": {
     "schemas": {
+      "ApiProviderPayload": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "base_url": {
+            "type": "string",
+            "title": "Base Url",
+            "default": ""
+          },
+          "protocol": {
+            "type": "string",
+            "title": "Protocol",
+            "default": "openai"
+          },
+          "image_request_mode": {
+            "type": "string",
+            "title": "Image Request Mode",
+            "default": "openai"
+          },
+          "image_generation_endpoint": {
+            "type": "string",
+            "title": "Image Generation Endpoint",
+            "default": ""
+          },
+          "image_edit_endpoint": {
+            "type": "string",
+            "title": "Image Edit Endpoint",
+            "default": ""
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "primary": {
+            "type": "boolean",
+            "title": "Primary",
+            "default": false
+          },
+          "image_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Image Models",
+            "default": []
+          },
+          "chat_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chat Models",
+            "default": []
+          },
+          "video_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Video Models",
+            "default": []
+          },
+          "model_protocols": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Model Protocols",
+            "default": {}
+          },
+          "ms_loras": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Ms Loras",
+            "default": []
+          },
+          "ms_defaults_version": {
+            "type": "integer",
+            "title": "Ms Defaults Version",
+            "default": 0
+          },
+          "rh_apps": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rh Apps",
+            "default": []
+          },
+          "rh_workflows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rh Workflows",
+            "default": []
+          },
+          "volcengine_project_name": {
+            "type": "string",
+            "title": "Volcengine Project Name",
+            "default": "default"
+          },
+          "volcengine_region": {
+            "type": "string",
+            "title": "Volcengine Region",
+            "default": "cn-beijing"
+          },
+          "volcengine_access_key_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volcengine Access Key Id"
+          },
+          "volcengine_secret_access_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volcengine Secret Access Key"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key"
+          },
+          "wallet_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Api Key"
+          },
+          "clear_key": {
+            "type": "boolean",
+            "title": "Clear Key",
+            "default": false
+          },
+          "clear_wallet_key": {
+            "type": "boolean",
+            "title": "Clear Wallet Key",
+            "default": false
+          },
+          "clear_volcengine_access_key_id": {
+            "type": "boolean",
+            "title": "Clear Volcengine Access Key Id",
+            "default": false
+          },
+          "clear_volcengine_secret_access_key": {
+            "type": "boolean",
+            "title": "Clear Volcengine Secret Access Key",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "ApiProviderPayload"
+      },
       "Body_upload_image_api_upload_post": {
         "properties": {
           "files": {
@@ -1017,6 +2169,28 @@
           "files"
         ],
         "title": "Body_upload_image_api_upload_post"
+      },
+      "Body_upload_local_assets_api_local_assets_upload_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "folder": {
+            "type": "string",
+            "title": "Folder",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_local_assets_api_local_assets_upload_post"
       },
       "CanvasCreateRequest": {
         "properties": {
@@ -1226,6 +2400,17 @@
         "type": "object",
         "title": "CanvasSaveRequest"
       },
+      "ConversationCreateRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": "新对话"
+          }
+        },
+        "type": "object",
+        "title": "ConversationCreateRequest"
+      },
       "DeleteHistoryRequest": {
         "properties": {
           "timestamp": {
@@ -1251,6 +2436,239 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LocalAssetCaptionRequest": {
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Names",
+            "default": []
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "default": "描述图片"
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetCaptionRequest"
+      },
+      "LocalAssetCaptionSaveRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetCaptionSaveRequest"
+      },
+      "LocalAssetClassifyRequest": {
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Names",
+            "default": []
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetClassifyRequest"
+      },
+      "LocalAssetDeleteRequest": {
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Names"
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetDeleteRequest"
+      },
+      "LocalAssetFolderRequest": {
+        "properties": {
+          "parent": {
+            "type": "string",
+            "title": "Parent",
+            "default": ""
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetFolderRequest"
+      },
+      "LocalAssetMoveRequest": {
+        "properties": {
+          "names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Names"
+          },
+          "folder": {
+            "type": "string",
+            "title": "Folder",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetMoveRequest"
+      },
+      "LocalAssetRenameRequest": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetRenameRequest"
+      },
+      "LocalAssetUrlImportItem": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "data": {
+            "type": "string",
+            "title": "Data",
+            "default": ""
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetUrlImportItem"
+      },
+      "LocalAssetUrlImportRequest": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LocalAssetUrlImportItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "default": []
+          },
+          "folder": {
+            "type": "string",
+            "title": "Folder",
+            "default": ""
+          },
+          "classify": {
+            "type": "boolean",
+            "title": "Classify",
+            "default": false
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "default": "comfly"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "default": ""
+          },
+          "ms_model": {
+            "type": "string",
+            "title": "Ms Model",
+            "default": ""
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "LocalAssetUrlImportRequest"
+      },
+      "MigrateRequest": {
+        "properties": {
+          "force": {
+            "type": "boolean",
+            "title": "Force",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "MigrateRequest"
       },
       "ProjectCreateRequest": {
         "properties": {
@@ -1290,6 +2708,37 @@
         },
         "type": "object",
         "title": "ProjectUpdateRequest"
+      },
+      "TestConnectionPayload": {
+        "properties": {
+          "base_url": {
+            "type": "string",
+            "title": "Base Url",
+            "default": ""
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "default": ""
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": ""
+          },
+          "protocol": {
+            "type": "string",
+            "title": "Protocol",
+            "default": "openai"
+          },
+          "image_request_mode": {
+            "type": "string",
+            "title": "Image Request Mode",
+            "default": "openai"
+          }
+        },
+        "type": "object",
+        "title": "TestConnectionPayload"
       },
       "ValidationError": {
         "properties": {
