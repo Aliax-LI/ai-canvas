@@ -18,7 +18,7 @@
 | 数据目录 | 用户数据与代码分离 → `~/.infinite-canvas/` |
 | 发布门槛 | parity 测试全绿后才发桌面安装包 |
 
-**当前阶段**：`M5 — 前端设置页迁移进行中`（API / ComfyUI 设置核心 CRUD 已接入；后端 **126** paths / pytest **106 passed**）
+**当前阶段**：`M6 — 前端核心页迁移进行中`（画布列表 / 素材库 / GPT 对话核心 CRUD 已接入）
 
 **当前里程碑进度**：
 
@@ -28,7 +28,8 @@
 | M1 uv 后端壳 | ✅ 完成 | `pyproject.toml`、`infinite_canvas` 包、health/app-info、static 挂载 |
 | M2–M3 后端 100% parity | ✅ 完成 | 已迁移 **126** legacy OpenAPI paths；Avatar/多平台生图/Canvas 视频全分支 parity |
 | M4 前端 Shell | ✅ 完成 | pnpm monorepo、Design System、14 路由占位、E2E app-shell |
-| M5–M7 前端业务页 | 🟡 进行中 | **M5** API/ComfyUI 设置核心页已迁移；素材/列表/chat/tools/双画布待做 |
+| M5 设置页 | ✅ 完成 | API / ComfyUI 设置核心 CRUD |
+| M6–M7 前端业务页 | 🟡 进行中 | **M6** 画布列表/素材库/对话；tools + 双画布待做 |
 | M8–M9 Tauri 双端 | ⚪ 未开始 | Win/macOS 安装包 |
 
 ---
@@ -47,13 +48,13 @@
 | 原 HTML | 计划路由 | 迁移状态 |
 |---------|----------|----------|
 | index.html | `/` | 🟡 路由占位 |
-| canvas-list.html | `/canvases` | 🟡 路由占位 |
+| canvas-list.html | `/canvases` | 🟡 核心 CRUD |
 | canvas.html | `/canvas/:id` | 🟡 Shell + 占位 |
 | smart-canvas.html | `/smart/:id` | 🟡 路由占位 |
-| asset-manager.html | `/assets` | 🟡 路由占位 |
+| asset-manager.html | `/assets` | 🟡 资产库 Tab 核心 |
 | api-settings.html | `/settings/api` | 🟡 核心 CRUD |
 | comfyui-settings.html | `/settings/comfyui` | 🟡 实例+工作流配置 |
-| gpt-chat.html | `/chat` | 🟡 路由占位 |
+| gpt-chat.html | `/chat` | 🟡 流式对话核心 |
 | zimage / enhance / klein / online / angle | `/tools/*` | 🟡 路由占位 |
 
 > **M4 脚手架**（2026-06-29）：pnpm workspace、`apps/web`（Vite + shadcn + tokens + 产品型/工具型 Shell）、`packages/api-types` / `canvas-schema`、Playwright E2E happy path。业务逻辑均为 ⚪。
@@ -70,6 +71,38 @@ ComfyUI · API/APIMart · ModelScope · RunningHub · 火山 · 即梦 CLI · PS
 
 > Agent：**每次**完成有意义的代码/配置变更后，在**本表最上方**插入一条。  
 > 格式：`### YYYY-MM-DD — 简短标题` + 变更摘要 + 影响范围 + 下一步。
+
+---
+
+### 2026-06-29 — M6 前端：画布列表 / 素材库 / GPT 对话
+
+**变更摘要**
+
+- **`/canvases`**：项目侧栏、画布卡片网格、新建画布/项目、删除、回收站恢复与永久删除；链接至 `/canvas/:id` 或 `/smart/:id`
+- **`/chat`**：会话列表、SSE 流式 `/api/chat/stream`、平台/模型选择（`/api/config`）
+- **`/assets`**：资产库/分类浏览、multipart 上传 → batch add、多选删除
+- E2E：`tests/e2e/m6-pages.spec.ts`（3 页 mock happy path）
+
+**影响路径**
+
+- `apps/web/src/features/canvas/`、`chat/`、`assets/`
+- `apps/web/src/lib/api/upload.ts`
+- `tests/e2e/m6-pages.spec.ts`
+- `docs/superpowers/plans/2026-06-29-phase2-frontend-m6-core-pages.md`
+
+**验证项**
+
+- [x] `pnpm --filter web build`
+- [x] `pnpm test:e2e` → **6 passed**
+
+**下一步**
+
+- M6 补全：看板拖拽、素材库多 Tab、对话图片模式
+- M7：Studio 工具页（zimage/enhance/klein/online/angle）
+
+**方向对齐**
+
+- 按迁移顺序推进；三页核心数据流已通；legacy 高级 UI 分后续小批补全
 
 ---
 
